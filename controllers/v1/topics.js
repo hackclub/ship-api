@@ -1,5 +1,5 @@
 const express = require('express')
-const { Topic } = require('../../models')
+const { Project, Topic } = require('../../models')
 
 const router = express.Router()
 
@@ -37,6 +37,23 @@ router.route('/:id')
         Topic.destroy({ where: { id: req.params.id } }).then(() => {
             res.json({ message: 'topic deleted' })
         })
+    })
+
+router.route('/:id/projects')
+    .get((req, res) => {
+        Project.findAll({
+            include: {
+                model: Topic,
+                as: 'topics',
+                where: {
+                    id: req.params.id
+                },
+                through: {
+                    attributes: []
+                }
+            }
+        })
+            .then(projects => res.json(projects))
     })
 
 module.exports = router
