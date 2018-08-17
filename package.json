@@ -1,0 +1,27 @@
+{
+    "name": "ship-api",
+    "version": "1.0.0",
+    "description": "Hack Club Ship’s backend system.",
+    "scripts": {
+        "dev": "nodemon -r dotenv/config app.js",
+        "start": "NODE_ENV=production node -r dotenv/config app.js"
+    },
+    "repository": "https://github.com/hackclub/ship",
+    "author": "Victor Truong <me@ifvictr.com>",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "dotenv": "^6.0.0",
+        "express": "^4.16.3",
+        "helmet": "^3.13.0",
+        "lodash": "^4.17.10",
+        "pg": "^7.4.3",
+        "pg-hstore": "^2.3.2",
+        "sequelize": "^4.38.0"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.3",
+        "sequelize-cli": "^4.0.0"
+    }
+}
