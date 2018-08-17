@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             underscored: true,
         }
     )
-    Topic.associate = function (models) {
+    Topic.associate = models => {
         Topic.belongsToMany(models.Project, {
             through: models.ProjectTopic,
             foreignKey: {
