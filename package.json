@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "description": "Hack Club Ship’s backend system.",
     "scripts": {
-        "dev": "sequelize db:migrate && nodemon -r dotenv/config app.js",
-        "start": "sequelize db:migrate && node app.js"
+        "dev": "npx sequelize db:migrate && nodemon -r dotenv/config app.js",
+        "start": "npx sequelize db:migrate && node app.js"
     },
     "repository": "https://github.com/hackclub/ship",
     "author": "Victor Truong <me@ifvictr.com>",
