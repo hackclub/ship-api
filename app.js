@@ -10,7 +10,7 @@ app.use(cors({
     origin: [
         'https://ship.hackclub.com',
         'https://ship-hackclub.netlify.com',
-        'http://localhost:3000'
+        'http://localhost:8000'
     ]
 }))
 app.use(helmet())
