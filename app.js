@@ -1,10 +1,18 @@
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const express = require('express')
 const helmet = require('helmet')
 const { sequelize } = require('./models')
 
 const app = express()
 
+app.use(cors({
+    origin: [
+        'https://ship.hackclub.com',
+        'https://ship-hackclub.netlify.com',
+        'http://localhost:3000'
+    ]
+}))
 app.use(helmet())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
