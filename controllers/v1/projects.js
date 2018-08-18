@@ -6,8 +6,13 @@ const router = express.Router()
 router.route('/')
     .get((req, res) => {
         Project.findAll({
-            include: [{ model: Topic, as: 'topics', through: { attributes: [] } }]
-        }).then(projects => res.json(projects))
+            include: {
+                model: Topic,
+                as: 'topics',
+                through: { attributes: [] }
+            }
+        })
+            .then(projects => res.json(projects))
     })
     .post((req, res) => {
         Project.create(req.body)

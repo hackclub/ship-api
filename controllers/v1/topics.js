@@ -45,12 +45,8 @@ router.route('/:id/projects')
             include: {
                 model: Topic,
                 as: 'topics',
-                where: {
-                    id: req.params.id
-                },
-                through: {
-                    attributes: []
-                }
+                where: { id: req.params.id },
+                through: { attributes: [] }
             }
         })
             .then(projects => res.json(projects))
