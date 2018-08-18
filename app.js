@@ -4,6 +4,7 @@ const express = require('express')
 const helmet = require('helmet')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github2').Strategy
+const SlackStrategy = require('passport-slack').Strategy
 const { User, Sequelize, sequelize } = require('./models')
 const { Op } = Sequelize
 const app = express()
@@ -43,6 +44,34 @@ passport.use(new GitHubStrategy(
             .spread((user, created) => {
                 if (created) {
                     console.log('New user created using GitHub')
+                }
+                done(null, user)
+            })
+    }
+))
+passport.use(new SlackStrategy(
+    {
+        clientID: process.env.SLACK_CLIENT_ID,
+        clientSecret: process.env.SLACK_CLIENT_SECRET,
+        callbackURL: `${process.env.API_URL}/v1/users/auth/slack/callback`
+    },
+    (accessToken, refreshToken, profile, done) => {
+        User.findOrCreate({
+            where: {
+                [Op.or]: [
+                    { email: profile.user.email }, // User is already in database, but hasn't linked Slack
+                    { slack_id: profile.user.id } // User has linked Slack already
+                ]
+            },
+            defaults: {
+                email: profile.user.email,
+                username: profile.user.name,
+                slack_id: profile.user.id
+            }
+        })
+            .spread((user, created) => {
+                if (created) {
+                    console.log('New user created using Slack')
                 }
                 done(null, user)
             })

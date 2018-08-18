@@ -14,6 +14,17 @@ router.route('/auth/github/callback')
         }
     )
 
+router.route('/auth/slack')
+    .get(passport.authenticate('slack'))
+
+router.route('/auth/slack/callback')
+    .get(
+        passport.authenticate('slack', { failureRedirect: `${process.env.SITE_URL}/login` }),
+        (req, res) => {
+            res.redirect(process.env.SITE_URL)
+        }
+    )
+
 router.route('/current')
     .get((req, res) => {
         if (!req.user) {
