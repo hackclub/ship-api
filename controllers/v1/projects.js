@@ -26,7 +26,14 @@ router.route('/')
 
 router.route('/:id')
     .get((req, res) => {
-        Project.findById(req.params.id).then(project => {
+        Project.findOne({
+            include: {
+                model: Topic,
+                as: 'topics',
+                through: { attributes: [] }
+            },
+            where: { id: req.params.id }
+        }).then(project => {
             if (project) {
                 res.json(project)
             }
