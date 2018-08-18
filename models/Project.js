@@ -1,3 +1,5 @@
+const { slugifyModel } = require('sequelize-slugify')
+
 module.exports = (sequelize, DataTypes) => {
     const Project = sequelize.define(
         'Project',
@@ -10,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
                     }
                 }
             },
+            slug: {
+                unique: true,
+                type: DataTypes.STRING,
+            },
             tagline: DataTypes.STRING,
             description: DataTypes.STRING
         },
@@ -18,6 +24,15 @@ module.exports = (sequelize, DataTypes) => {
             underscored: true,
         }
     )
+    slugifyModel(Project, {
+        source: ['name'],
+        // suffixSource: ['id'], // Current being ignored by sequelize-slugify
+        slugOptions: {
+            symbol: false,
+            lower: true
+        },
+        overwrite: false
+    })
     Project.associate = models => {
         Project.belongsToMany(models.User, {
             through: models.ProjectCreator,
