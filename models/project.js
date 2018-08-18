@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'topics'
         })
+        Project.hasMany(models.ProjectURL, {
+            as: 'urls'
+        })
     }
 
     return Project

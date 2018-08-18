@@ -1,5 +1,5 @@
 const express = require('express')
-const { Project, Topic } = require('../../models')
+const { Project, ProjectURL, Topic } = require('../../models')
 
 const router = express.Router()
 
@@ -42,12 +42,19 @@ router.route('/:id')
 router.route('/:id/projects')
     .get((req, res) => {
         Project.findAll({
-            include: {
-                model: Topic,
-                as: 'topics',
-                where: { id: req.params.id },
-                through: { attributes: [] }
-            }
+            include: [
+                {
+                    model: Topic,
+                    as: 'topics',
+                    where: { id: req.params.id },
+                    through: { attributes: [] }
+                },
+                {
+                    model: ProjectURL,
+                    as: 'urls',
+                    attributes: { exclude: ['project_id'] }
+                }
+            ]
         })
             .then(projects => res.json(projects))
     })
