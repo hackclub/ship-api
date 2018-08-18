@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         'User',
         {
             email: DataTypes.STRING,
-            username: DataTypes.STRING
+            username: DataTypes.STRING,
+            github_id: DataTypes.INTEGER
         },
         {
             tableName: 'users',
