@@ -10,6 +10,15 @@ module.exports = (sequelize, DataTypes) => {
             underscored: true,
         }
     )
+    User.associate = models => {
+        User.belongsToMany(models.Project, {
+            through: models.ProjectCreator,
+            foreignKey: {
+                name: 'user_id',
+                allowNull: false,
+            }
+        })
+    }
 
     return User
 }
