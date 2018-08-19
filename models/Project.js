@@ -50,8 +50,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'topics'
         })
-        Project.hasMany(models.ProjectURL, {
-            as: 'urls'
+        Project.hasMany(models.Link, {
+            as: 'links'
         })
     }
 

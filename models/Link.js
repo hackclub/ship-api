@@ -1,18 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-    const ProjectURL = sequelize.define(
-        'ProjectURL',
+    const Link = sequelize.define(
+        'Link',
         {
             project_id: DataTypes.INTEGER,
             url: DataTypes.STRING
         },
         {
-            tableName: 'project_urls',
+            tableName: 'links',
             underscored: true,
         }
     )
-    ProjectURL.associate = models => {
-        ProjectURL.belongsTo(models.Project)
+    Link.associate = models => {
+        Link.belongsTo(models.Project)
     }
 
-    return ProjectURL
+    return Link
 }
