@@ -33,13 +33,6 @@ router.route('/')
 
 router.route('/:id')
     .get((req, res) => {
-        const allowedFields = ['id', 'slug']
-        const canSearchBy = field => allowedFields.includes(field)
-        const searchBy = canSearchBy(req.query.by) ? req.query.by : 'id'
-        if (searchBy === 'id' && !Number.isInteger(parseInt(req.params.id))) {
-            res.json({ message: '`id` needs to be an integer' })
-            return
-        }
         Project.findOne({
             include: [
                 {
@@ -53,7 +46,7 @@ router.route('/:id')
                     attributes: { exclude: ['project_id'] }
                 }
             ],
-            where: { [searchBy]: req.params.id }
+            where: { id: req.params.id }
         }).then(project => {
             if (project) {
                 res.json(project)
