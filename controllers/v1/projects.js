@@ -67,4 +67,30 @@ router.route('/:id')
         })
     })
 
+router.route('/slug/:slug')
+    .get((req, res) => {
+        Project.findOne({
+            include: [
+                {
+                    model: Topic,
+                    as: 'topics',
+                    through: { attributes: [] }
+                },
+                {
+                    model: ProjectURL,
+                    as: 'urls',
+                    attributes: { exclude: ['project_id'] }
+                }
+            ],
+            where: { slug: req.params.slug }
+        }).then(project => {
+            if (project) {
+                res.json(project)
+            }
+            else {
+                res.status(404).json({ message: 'project not found' })
+            }
+        })
+    })
+
 module.exports = router
