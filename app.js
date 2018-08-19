@@ -53,7 +53,8 @@ passport.use(new SlackStrategy(
     {
         clientID: process.env.SLACK_CLIENT_ID,
         clientSecret: process.env.SLACK_CLIENT_SECRET,
-        callbackURL: `${process.env.API_URL}/v1/users/auth/slack/callback`
+        callbackURL: `${process.env.API_URL}/v1/users/auth/slack/callback`,
+        scope: ['identity.basic']
     },
     (accessToken, refreshToken, profile, done) => {
         User.findOrCreate({
