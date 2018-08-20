@@ -20,6 +20,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             }
         })
+        User.belongsToMany(models.Project, {
+            through: models.ProjectUpvote,
+            foreignKey: {
+                name: 'user_id',
+                allowNull: false
+            }
+        })
     }
 
     return User

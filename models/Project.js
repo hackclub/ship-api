@@ -53,6 +53,14 @@ module.exports = (sequelize, DataTypes) => {
         Project.hasMany(models.Link, {
             as: 'links'
         })
+        Project.belongsToMany(models.User, {
+            through: models.ProjectUpvote,
+            foreignKey: {
+                name: 'project_id',
+                allowNull: false
+            },
+            as: 'upvotes'
+        })
     }
 
     return Project
