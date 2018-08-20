@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'creators'
         })
-        Project.hasMany(models.Link, {
+        Project.hasMany(models.ProjectLink, {
             as: 'links'
         })
         Project.belongsToMany(models.Topic, {
