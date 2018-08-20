@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
             },
             tagline: DataTypes.STRING,
-            description: DataTypes.STRING
+            description: DataTypes.TEXT
         },
         {
             tableName: 'projects',
