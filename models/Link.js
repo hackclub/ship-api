@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'links',
-            underscored: true,
+            underscored: true
         }
     )
     Link.associate = models => {

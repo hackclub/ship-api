@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'projects',
-            underscored: true,
+            underscored: true
         }
     )
     slugifyModel(Project, {
@@ -42,6 +42,9 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'creators'
         })
+        Project.hasMany(models.Link, {
+            as: 'links'
+        })
         Project.belongsToMany(models.Topic, {
             through: models.ProjectTopic,
             foreignKey: {
@@ -49,9 +52,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             as: 'topics'
-        })
-        Project.hasMany(models.Link, {
-            as: 'links'
         })
         Project.belongsToMany(models.User, {
             through: models.ProjectUpvote,

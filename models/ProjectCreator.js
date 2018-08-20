@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'project_creators',
-            underscored: true,
+            underscored: true
         }
     )
 

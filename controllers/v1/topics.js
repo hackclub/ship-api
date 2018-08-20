@@ -44,9 +44,8 @@ router.route('/:id/projects')
         Project.findAll({
             include: [
                 {
-                    model: Topic,
-                    as: 'topics',
-                    where: { id: req.params.id },
+                    model: User,
+                    as: 'creators',
                     through: { attributes: [] }
                 },
                 {
@@ -55,8 +54,9 @@ router.route('/:id/projects')
                     attributes: { exclude: ['project_id'] }
                 },
                 {
-                    model: User,
-                    as: 'creators',
+                    model: Topic,
+                    as: 'topics',
+                    where: { id: req.params.id },
                     through: { attributes: [] }
                 }
             ]

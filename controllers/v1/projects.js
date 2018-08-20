@@ -8,8 +8,8 @@ router.route('/')
         Project.findAll({
             include: [
                 {
-                    model: Topic,
-                    as: 'topics',
+                    model: User,
+                    as: 'creators',
                     through: { attributes: [] }
                 },
                 {
@@ -18,8 +18,8 @@ router.route('/')
                     attributes: { exclude: ['project_id'] }
                 },
                 {
-                    model: User,
-                    as: 'creators',
+                    model: Topic,
+                    as: 'topics',
                     through: { attributes: [] }
                 }
             ]
@@ -41,8 +41,8 @@ router.route('/:id')
         Project.findOne({
             include: [
                 {
-                    model: Topic,
-                    as: 'topics',
+                    model: User,
+                    as: 'creators',
                     through: { attributes: [] }
                 },
                 {
@@ -51,8 +51,8 @@ router.route('/:id')
                     attributes: { exclude: ['project_id'] }
                 },
                 {
-                    model: User,
-                    as: 'creators',
+                    model: Topic,
+                    as: 'topics',
                     through: { attributes: [] }
                 }
             ],
@@ -82,8 +82,8 @@ router.route('/slug/:slug')
         Project.findOne({
             include: [
                 {
-                    model: Topic,
-                    as: 'topics',
+                    model: User,
+                    as: 'creators',
                     through: { attributes: [] }
                 },
                 {
@@ -92,8 +92,8 @@ router.route('/slug/:slug')
                     attributes: { exclude: ['project_id'] }
                 },
                 {
-                    model: User,
-                    as: 'creators',
+                    model: Topic,
+                    as: 'topics',
                     through: { attributes: [] }
                 }
             ],
