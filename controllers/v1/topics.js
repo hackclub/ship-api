@@ -64,4 +64,16 @@ router.route('/:id/projects')
             .then(projects => res.json(projects))
     })
 
+router.route('/slug/:slug')
+    .get((req, res) => {
+        Topic.findOne({ where: { slug: req.params.slug } }).then(topic => {
+            if (topic) {
+                res.json(topic)
+            }
+            else {
+                res.status(404).json({ message: 'topic not found' })
+            }
+        })
+    })
+
 module.exports = router
