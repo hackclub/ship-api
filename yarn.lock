@@ -319,6 +319,10 @@ color-name@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.1.tgz#4b1415304cf50028ea81643643bd82ea05803689"
 
+colornames@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/colornames/-/colornames-1.1.1.tgz#f8889030685c7c4ff9e2a559f5077eb76a816f96"
+
 commander@^2.9.0:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -906,6 +910,10 @@ helmet@^3.13.0:
     referrer-policy "1.1.0"
     x-xss-protection "1.1.0"
 
+hex-rgb@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/hex-rgb/-/hex-rgb-1.0.0.tgz#532275697cb9823e052429b184c6781d46cfdf49"
+
 hide-powered-by@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/hide-powered-by/-/hide-powered-by-1.0.0.tgz#4a85ad65881f62857fc70af7174a1184dccce32b"
@@ -1105,6 +1113,10 @@ is-glob@^4.0.0:
   dependencies:
     is-extglob "^2.1.1"
 
+is-hex-color@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/is-hex-color/-/is-hex-color-0.0.1.tgz#08503ce8e4b8596fd420ae15cf50900ae01dc66c"
+
 is-installed-globally@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/is-installed-globally/-/is-installed-globally-0.1.0.tgz#0dfd98f5a9111716dd535dda6492f67bf3d25a80"
@@ -1247,7 +1259,7 @@ lodash.defaults@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
 
-lodash@^4.17.0, lodash@^4.17.1, lodash@^4.17.10, lodash@^4.17.5:
+lodash@^4.17.0, lodash@^4.17.1, lodash@^4.17.10, lodash@^4.17.5, lodash@^4.6.1:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -2009,6 +2021,10 @@ retry-as-promised@^2.3.2:
     bluebird "^3.4.6"
     debug "^2.6.9"
 
+rgb-hex@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rgb-hex/-/rgb-hex-1.0.0.tgz#bfaf8cd9cd9164b5a26d71eb4f15a0965324b3c1"
+
 rimraf@^2.6.1:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.2.tgz#2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36"
@@ -2287,6 +2303,15 @@ stream-combiner@~0.0.4:
   resolved "https://registry.yarnpkg.com/stream-combiner/-/stream-combiner-0.0.4.tgz#4d5e433c185261dde623ca3f44c586bcf5c4ad14"
   dependencies:
     duplexer "~0.1.1"
+
+string-to-color@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/string-to-color/-/string-to-color-2.0.0.tgz#147ccf95ac45ceb7ff14ed627aaf38769bd85ad4"
+  dependencies:
+    colornames "^1.1.1"
+    hex-rgb "^1.0.0"
+    lodash "^4.6.1"
+    rgb-hex "^1.0.0"
 
 string-width@^1.0.1:
   version "1.0.2"

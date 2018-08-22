@@ -16,6 +16,7 @@
         "dotenv": "^6.0.0",
         "express": "^4.16.3",
         "helmet": "^3.13.0",
+        "is-hex-color": "^0.0.1",
         "lodash": "^4.17.10",
         "passport": "^0.4.0",
         "passport-github2": "^0.1.11",
@@ -23,7 +24,8 @@
         "pg": "^7.4.3",
         "pg-hstore": "^2.3.2",
         "sequelize": "^4.38.0",
-        "sequelize-slugify": "^0.6.1"
+        "sequelize-slugify": "^0.6.1",
+        "string-to-color": "^2.0.0"
     },
     "devDependencies": {
         "nodemon": "^1.18.3",
