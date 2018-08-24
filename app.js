@@ -2,6 +2,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const express = require('express')
 const helmet = require('helmet')
+const { kebabCase } = require('lodash')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github2').Strategy
 const SlackStrategy = require('passport-slack').Strategy
@@ -66,7 +67,7 @@ passport.use(new SlackStrategy(
             },
             defaults: {
                 email: profile.user.email,
-                username: profile.user.name,
+                username: kebabCase(profile.user.name),
                 slack_id: profile.user.id
             }
         })
