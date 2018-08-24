@@ -1,6 +1,6 @@
 const express = require('express')
 const passport = require('passport')
-const { User } = require('../../models')
+const { Project, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -14,6 +14,31 @@ router.route('/:id')
                 res.status(404).json({ message: 'user not found' })
             }
         })
+    })
+
+router.route('/:id/projects')
+    .get((req, res) => {
+        Project.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'creators',
+                    where: { id: req.params.id },
+                    through: { attributes: [] }
+                },
+                {
+                    model: ProjectLink,
+                    as: 'links',
+                    attributes: { exclude: ['project_id'] }
+                },
+                {
+                    model: Topic,
+                    as: 'topics',
+                    through: { attributes: [] }
+                }
+            ]
+        })
+            .then(projects => res.json(projects))
     })
 
 router.route('/auth/github')
