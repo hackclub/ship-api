@@ -66,7 +66,7 @@ router.route('/auth/slack/callback')
 router.route('/current')
     .get((req, res) => {
         if (!req.user) {
-            res.json({ message: 'authorization required' })
+            res.status(401).json({ message: 'authorization required' })
             return
         }
         res.json(req.user)

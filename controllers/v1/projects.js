@@ -29,7 +29,7 @@ router.route('/')
     .post((req, res) => {
         Project.create(req.body)
             .then(data => {
-                res.json({ message: 'project created', data })
+                res.status(201).json({ message: 'project created', data })
             })
             .catch(e => {
                 res.status(422).json({ message: e.errors[0].message })
@@ -68,12 +68,12 @@ router.route('/:id')
     })
     .patch((req, res) => {
         Project.update(req.body, { where: { id: req.params.id } }).then(() => {
-            res.json({ message: 'project updated' })
+            res.status(202).json({ message: 'project updated' })
         })
     })
     .delete((req, res) => {
         Project.destroy({ where: { id: req.params.id } }).then(() => {
-            res.json({ message: 'project deleted' })
+            res.status(202).json({ message: 'project deleted' })
         })
     })
 
