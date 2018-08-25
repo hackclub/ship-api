@@ -34,6 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         overwrite: false
     })
     Project.associate = models => {
+        Project.hasMany(models.ProjectComment, {
+            foreignKey: {
+                name: 'project_id',
+                allowNull: false
+            },
+            as: 'comments'
+        })
         Project.belongsToMany(models.User, {
             through: models.ProjectCreator,
             foreignKey: {
