@@ -1,6 +1,6 @@
 const express = require('express')
 const passport = require('passport')
-const { Project, ProjectLink, Topic, User } = require('../../models')
+const { ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -18,27 +18,35 @@ router.route('/:id')
 
 router.route('/:id/projects')
     .get((req, res) => {
-        Project.findAll({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    where: { id: req.params.id },
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links',
-                    attributes: { exclude: ['project_id'] }
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    through: { attributes: [] }
+        User.findById(req.params.id)
+            .then(user => {
+                if (user) {
+                    user.getProjects({
+                        include: [
+                            {
+                                model: User,
+                                as: 'creators',
+                                through: { attributes: [] }
+                            },
+                            {
+                                model: ProjectLink,
+                                as: 'links',
+                                attributes: { exclude: ['project_id'] }
+                            },
+                            {
+                                model: Topic,
+                                as: 'topics',
+                                through: { attributes: [] }
+                            }
+                        ],
+                        joinTableAttributes: []
+                    })
+                        .then(projects => res.json(projects))
                 }
-            ]
-        })
-            .then(projects => res.json(projects))
+                else {
+                    res.status(404).json({ message: 'user not found' })
+                }
+            })
     })
 
 router.route('/auth/github')
