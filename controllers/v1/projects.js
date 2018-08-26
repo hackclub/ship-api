@@ -1,5 +1,5 @@
 const express = require('express')
-const { Project, ProjectComment, ProjectLink, Topic, User } = require('../../models')
+const { Project, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
