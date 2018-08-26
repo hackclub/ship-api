@@ -1,5 +1,5 @@
 const express = require('express')
-const { Project, ProjectLink, Topic, User } = require('../../models')
+const { ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -41,27 +41,35 @@ router.route('/:id')
 
 router.route('/:id/projects')
     .get((req, res) => {
-        Project.findAll({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links',
-                    attributes: { exclude: ['project_id'] }
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    where: { id: req.params.id },
-                    through: { attributes: [] }
+        Topic.findById(req.params.id)
+            .then(topic => {
+                if (topic) {
+                    topic.getProjects({
+                        include: [
+                            {
+                                model: User,
+                                as: 'creators',
+                                through: { attributes: [] }
+                            },
+                            {
+                                model: ProjectLink,
+                                as: 'links',
+                                attributes: { exclude: ['project_id'] }
+                            },
+                            {
+                                model: Topic,
+                                as: 'topics',
+                                through: { attributes: [] }
+                            }
+                        ],
+                        joinTableAttributes: []
+                    })
+                        .then(projects => res.json(projects))
                 }
-            ]
-        })
-            .then(projects => res.json(projects))
+                else {
+                    res.status(404).json({ message: 'topic not found' })
+                }
+            })
     })
 
 router.route('/slug/:slug')
