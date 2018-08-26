@@ -1,4 +1,3 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
     const ProjectUpvote = sequelize.define(
         'ProjectUpvote',
@@ -11,6 +10,17 @@ module.exports = (sequelize, DataTypes) => {
             underscored: true
         }
     )
+    ProjectUpvote.associate = models => {
+        ProjectUpvote.belongsTo(models.Project, {
+            foreignKey: 'project_id',
+            allowNull: false
+        })
+        ProjectUpvote.belongsTo(models.User, {
+            as: 'user',
+            foreignKey: 'user_id',
+            allowNull: false
+        })
+    }
 
     return ProjectUpvote
 }

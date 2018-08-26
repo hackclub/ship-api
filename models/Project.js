@@ -60,8 +60,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'topics'
         })
-        Project.belongsToMany(models.User, {
-            through: models.ProjectUpvote,
+        Project.hasMany(models.ProjectUpvote, {
             foreignKey: {
                 name: 'project_id',
                 allowNull: false
