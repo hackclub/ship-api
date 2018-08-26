@@ -1,5 +1,5 @@
 const express = require('express')
-const { Project, ProjectLink, Topic, User } = require('../../models')
+const { Project, ProjectComment, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -75,6 +75,21 @@ router.route('/:id')
         Project.destroy({ where: { id: req.params.id } }).then(() => {
             res.status(202).json({ message: 'project deleted' })
         })
+    })
+
+router.route('/:id/comments')
+    .get((req, res) => {
+        ProjectComment.findAll({
+            where: {
+                project_id: req.params.id
+            },
+            include: {
+                model: User,
+                as: 'user'
+            },
+            attributes: { exclude: ['project_id', 'user_id'] }
+        })
+            .then(comments => res.json(comments))
     })
 
 router.route('/slug/:slug')
