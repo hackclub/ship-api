@@ -92,6 +92,26 @@ router.route('/:id/comments')
             .then(comments => res.json(comments))
     })
 
+router.route('/:id/upvotes')
+    .get((req, res) => {
+        Project.findById(req.params.id)
+            .then(project => {
+                if (project) {
+                    project.getUpvotes({
+                        include: {
+                            model: User,
+                            as: 'user'
+                        },
+                        attributes: { exclude: ['project_id', 'user_id'] }
+                    })
+                        .then(upvotes => res.json(upvotes))
+                }
+                else {
+                    res.status(404).json({ message: 'project not found' })
+                }
+            })
+    })
+
 router.route('/slug/:slug')
     .get((req, res) => {
         Project.findOne({
