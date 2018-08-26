@@ -79,17 +79,22 @@ router.route('/:id')
 
 router.route('/:id/comments')
     .get((req, res) => {
-        ProjectComment.findAll({
-            where: {
-                project_id: req.params.id
-            },
-            include: {
-                model: User,
-                as: 'user'
-            },
-            attributes: { exclude: ['project_id', 'user_id'] }
-        })
-            .then(comments => res.json(comments))
+        Project.findById(req.params.id)
+            .then(project => {
+                if (project) {
+                    project.getComments({
+                        include: {
+                            model: User,
+                            as: 'user'
+                        },
+                        attributes: { exclude: ['project_id', 'user_id'] }
+                    })
+                        .then(comments => res.json(comments))
+                }
+                else {
+                    res.status(404).json({ message: 'project not found' })
+                }
+            })
     })
 
 router.route('/:id/upvotes')
