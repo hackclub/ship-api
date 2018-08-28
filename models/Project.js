@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
                 unique: true,
                 type: DataTypes.STRING,
             },
+            main_image_id: DataTypes.INTEGER,
             tagline: DataTypes.STRING,
             description: DataTypes.TEXT
         },
@@ -54,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
         })
         Project.hasMany(models.ProjectLink, {
             as: 'links'
+        })
+        Project.belongsTo(models.ProjectImage, {
+            as: 'main_image',
+            foreignKey: 'main_image_id'
         })
         Project.belongsToMany(models.Topic, {
             through: models.ProjectTopic,
