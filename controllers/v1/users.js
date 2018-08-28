@@ -1,6 +1,6 @@
 const express = require('express')
 const passport = require('passport')
-const { ProjectLink, Topic, User } = require('../../models')
+const { ProjectImage, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -27,6 +27,11 @@ router.route('/:id/projects')
                                 model: User,
                                 as: 'creators',
                                 through: { attributes: [] }
+                            },
+                            {
+                                model: ProjectImage,
+                                as: 'images',
+                                attributes: { exclude: ['project_id'] }
                             },
                             {
                                 model: ProjectLink,
