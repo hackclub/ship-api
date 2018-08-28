@@ -49,6 +49,9 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'creators'
         })
+        Project.hasMany(models.ProjectImage, {
+            as: 'images'
+        })
         Project.hasMany(models.ProjectLink, {
             as: 'links'
         })
