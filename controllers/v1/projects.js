@@ -1,4 +1,5 @@
 const express = require('express')
+const { projectIndex } = require('../../helpers/search')
 const { Project, ProjectImage, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
@@ -34,6 +35,8 @@ router.route('/')
     .post((req, res) => {
         Project.create(req.body)
             .then(data => {
+                const obj = { ...data.dataValues, objectID: data.id }
+                projectIndex.addObject(obj)
                 res.status(201).json({ message: 'project created', data })
             })
             .catch(e => {
@@ -78,11 +81,14 @@ router.route('/:id')
     })
     .patch((req, res) => {
         Project.update(req.body, { where: { id: req.params.id } }).then(() => {
+            const obj = { ...req.body, objectID: req.params.id }
+            projectIndex.partialUpdateObject(obj)
             res.status(202).json({ message: 'project updated' })
         })
     })
     .delete((req, res) => {
         Project.destroy({ where: { id: req.params.id } }).then(() => {
+            projectIndex.deleteObject(req.params.id)
             res.status(202).json({ message: 'project deleted' })
         })
     })
