@@ -4,6 +4,7 @@ const express = require('express')
 const helmet = require('helmet')
 const { kebabCase } = require('lodash')
 const passport = require('passport')
+const BearerStrategy = require('passport-http-bearer').Strategy
 const GitHubStrategy = require('passport-github2').Strategy
 const SlackStrategy = require('passport-slack').Strategy
 const { User, Sequelize, sequelize } = require('./models')
@@ -21,6 +22,15 @@ passport.deserializeUser((id, done) => {
 })
 
 // Set up Passport
+passport.use(new BearerStrategy(
+    (token, done) => {
+        User.findOne({ where: { auth_token: token } }).then(user => {
+            if (user) {
+                done(null, user)
+            }
+        })
+    }
+))
 passport.use(new GitHubStrategy(
     {
         clientID: process.env.GITHUB_CLIENT_ID,
