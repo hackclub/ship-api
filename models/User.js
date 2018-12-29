@@ -5,7 +5,9 @@ module.exports = (sequelize, DataTypes) => {
             email: DataTypes.STRING,
             username: DataTypes.STRING,
             github_id: DataTypes.INTEGER,
-            slack_id: DataTypes.STRING
+            slack_id: DataTypes.STRING,
+            auth_token: DataTypes.STRING,
+            auth_token_created_at: DataTypes.DATE
         },
         {
             tableName: 'users',
