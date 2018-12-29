@@ -38,16 +38,18 @@ passport.use(new GitHubStrategy(
         callbackURL: `${process.env.API_URL}/v1/users/auth/github/callback`
     },
     (accessToken, refreshToken, profile, done) => {
-        const hasGitHubEmail = typeof profile.emails[0] !== 'undefined'
+        const hasGitHubEmail = profile.hasOwnProperty('emails') && profile.emails.length > 0
+        const githubEmail = hasGitHubEmail ? profile.emails[0].value : null
+        // TODO: Fail when no email is found
         User.findOrCreate({
             where: {
                 [Op.or]: [
-                    { email: profile.emails[0].value }, // User is already in database, but hasn't linked GitHub
+                    { email: githubEmail }, // User is already in database, but hasn't linked GitHub
                     { github_id: profile.id } // User has linked GitHub already
                 ]
             },
             defaults: {
-                email: hasGitHubEmail ? profile.emails[0].value : null,
+                email: githubEmail,
                 username: profile.username,
                 github_id: profile.id
             }
