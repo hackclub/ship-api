@@ -67,7 +67,7 @@ router.route('/username/:username')
 
 router.route('/:id')
     .get((req, res) => {
-        User.findById(req.params.id).then(user => {
+        User.findById(req.params.id, { attributes: { exclude: ['auth_token', 'auth_token_created_at'] } }).then(user => {
             if (user) {
                 res.json(user)
             }
