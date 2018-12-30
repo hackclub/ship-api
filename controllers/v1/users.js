@@ -42,13 +42,16 @@ router.route('/auth/slack/callback')
     )
 
 router.route('/current')
-    .get((req, res) => {
-        if (!req.user) {
-            res.status(401).json({ message: 'authorization required' })
-            return
+    .get(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            if (!req.user) {
+                res.status(401).json({ message: 'authorization required' })
+                return
+            }
+            res.json(req.user)
         }
-        res.json(req.user)
-    })
+    )
 
 router.route('/username/:username')
     .get((req, res) => {
