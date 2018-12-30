@@ -20,6 +20,18 @@ router.route('/')
             })
     })
 
+router.route('/slug/:slug')
+    .get((req, res) => {
+        Topic.findOne({ where: { slug: req.params.slug } }).then(topic => {
+            if (topic) {
+                res.json(topic)
+            }
+            else {
+                res.status(404).json({ message: 'topic not found' })
+            }
+        })
+    })
+
 router.route('/:id')
     .get((req, res) => {
         Topic.findById(req.params.id).then(topic => {
@@ -81,18 +93,6 @@ router.route('/:id/projects')
                     res.status(404).json({ message: 'topic not found' })
                 }
             })
-    })
-
-router.route('/slug/:slug')
-    .get((req, res) => {
-        Topic.findOne({ where: { slug: req.params.slug } }).then(topic => {
-            if (topic) {
-                res.json(topic)
-            }
-            else {
-                res.status(404).json({ message: 'topic not found' })
-            }
-        })
     })
 
 module.exports = router

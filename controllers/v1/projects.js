@@ -44,6 +44,42 @@ router.route('/')
             })
     })
 
+router.route('/slug/:slug')
+    .get((req, res) => {
+        Project.findOne({
+            include: [
+                {
+                    model: User,
+                    as: 'creators',
+                    through: { attributes: [] }
+                },
+                {
+                    model: ProjectImage,
+                    as: 'images',
+                    attributes: { exclude: ['project_id'] }
+                },
+                {
+                    model: ProjectLink,
+                    as: 'links',
+                    attributes: { exclude: ['project_id'] }
+                },
+                {
+                    model: Topic,
+                    as: 'topics',
+                    through: { attributes: [] }
+                }
+            ],
+            where: { slug: req.params.slug }
+        }).then(project => {
+            if (project) {
+                res.json(project)
+            }
+            else {
+                res.status(404).json({ message: 'project not found' })
+            }
+        })
+    })
+
 router.route('/:id')
     .get((req, res) => {
         Project.findOne({
@@ -131,42 +167,6 @@ router.route('/:id/upvotes')
                     res.status(404).json({ message: 'project not found' })
                 }
             })
-    })
-
-router.route('/slug/:slug')
-    .get((req, res) => {
-        Project.findOne({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'images',
-                    attributes: { exclude: ['project_id'] }
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links',
-                    attributes: { exclude: ['project_id'] }
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    through: { attributes: [] }
-                }
-            ],
-            where: { slug: req.params.slug }
-        }).then(project => {
-            if (project) {
-                res.json(project)
-            }
-            else {
-                res.status(404).json({ message: 'project not found' })
-            }
-        })
     })
 
 module.exports = router
