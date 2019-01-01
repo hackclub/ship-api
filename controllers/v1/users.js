@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const express = require('express')
 const passport = require('passport')
-const { ProjectImage, ProjectLink, Topic, User } = require('../../models')
+const { Project, ProjectImage, ProjectLink, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -114,6 +114,26 @@ router.route('/:id/projects')
                 }
                 else {
                     res.status(404).json({ message: 'user not found' })
+                }
+            })
+    })
+
+router.route('/:id/upvotes')
+    .get((req, res) => {
+        User.findById(req.params.id)
+            .then(user => {
+                if (user) {
+                    user.getUpvotes({
+                        include: {
+                            model: Project,
+                            as: 'project'
+                        },
+                        attributes: { exclude: ['project_id', 'user_id'] }
+                    })
+                        .then(upvotes => res.json(upvotes))
+                }
+                else {
+                    res.status(404).json({ message: 'project not found' })
                 }
             })
     })

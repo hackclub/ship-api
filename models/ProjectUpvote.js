@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     )
     ProjectUpvote.associate = models => {
         ProjectUpvote.belongsTo(models.Project, {
+            as: 'project',
             foreignKey: 'project_id',
             allowNull: false
         })
