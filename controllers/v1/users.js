@@ -55,7 +55,10 @@ router.route('/current')
 
 router.route('/username/:username')
     .get((req, res) => {
-        User.findOne({ where: { username: req.params.username } }).then(user => {
+        User.findOne({
+            where: { username: req.params.username },
+            attributes: { exclude: ['auth_token', 'auth_token_created_at'] }
+        }).then(user => {
             if (user) {
                 res.json(user)
             }
