@@ -1,6 +1,6 @@
 const express = require('express')
 const { projectIndex } = require('../../helpers/search')
-const { Project, ProjectImage, ProjectLink, Topic, User } = require('../../models')
+const { Project, ProjectComment, ProjectImage, ProjectLink, ProjectUpvote, Topic, User } = require('../../models')
 
 const router = express.Router()
 
@@ -166,6 +166,18 @@ router.route('/:id/comments')
                 }
             })
     })
+    .post((req, res) => {
+        Project.findById(req.params.id)
+            .then(project => {
+                if (project) {
+                    ProjectComment.create(req.body)
+                        .then(comment => project.addComment(comment))
+                        .then(() => {
+                            res.status(201).json({ message: 'comment created' })
+                        })
+                }
+            })
+    })
 
 router.route('/:id/upvotes')
     .get((req, res) => {
@@ -183,6 +195,18 @@ router.route('/:id/upvotes')
                 }
                 else {
                     res.status(404).json({ message: 'project not found' })
+                }
+            })
+    })
+    .post((req, res) => {
+        Project.findById(req.params.id)
+            .then(project => {
+                if (project) {
+                    ProjectUpvote.create(req.body)
+                        .then(upvote => project.addUpvote(upvote))
+                        .then(() => {
+                            res.status(201).json({ message: 'upvote created' })
+                        })
                 }
             })
     })
