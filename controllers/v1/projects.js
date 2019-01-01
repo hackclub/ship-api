@@ -27,8 +27,14 @@ router.route('/')
                     model: Topic,
                     as: 'topics',
                     through: { attributes: [] }
+                },
+                {
+                    model: ProjectImage,
+                    as: 'main_image',
+                    attributes: { exclude: ['project_id'] }
                 }
-            ]
+            ],
+            attributes: { exclude: ['main_image_id'] }
         })
             .then(projects => res.json(projects))
     })
@@ -67,8 +73,14 @@ router.route('/slug/:slug')
                     model: Topic,
                     as: 'topics',
                     through: { attributes: [] }
+                },
+                {
+                    model: ProjectImage,
+                    as: 'main_image',
+                    attributes: { exclude: ['project_id'] }
                 }
             ],
+            attributes: { exclude: ['main_image_id'] },
             where: { slug: req.params.slug }
         }).then(project => {
             if (project) {
@@ -103,8 +115,14 @@ router.route('/:id')
                     model: Topic,
                     as: 'topics',
                     through: { attributes: [] }
+                },
+                {
+                    model: ProjectImage,
+                    as: 'main_image',
+                    attributes: { exclude: ['project_id'] }
                 }
             ],
+            attributes: { exclude: ['main_image_id'] },
             where: { id: req.params.id }
         }).then(project => {
             if (project) {
