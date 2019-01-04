@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'project_links',
             underscored: true,
             defaultScope: {
-                attributes: { exclude: ['project_id'] }
+                attributes: {
+                    exclude: ['created_at', 'updated_at', 'project_id']
+                }
             }
         }
     )

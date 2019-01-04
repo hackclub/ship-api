@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
                         'auth_token_created_at',
                         'email',
                         'github_id',
-                        'slack_id'
+                        'slack_id',
+                        'updated_at'
                     ]
                 }
             }
