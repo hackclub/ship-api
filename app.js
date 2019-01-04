@@ -106,8 +106,10 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // Routes
+app.use('/v1/comments', require('./controllers/v1/comments'))
 app.use('/v1/projects', require('./controllers/v1/projects'))
 app.use('/v1/topics', require('./controllers/v1/topics'))
+app.use('/v1/upvotes', require('./controllers/v1/upvotes'))
 app.use('/v1/users', require('./controllers/v1/users'))
 
 const port = process.env.PORT || 3000
