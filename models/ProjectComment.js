@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'project_comments',
-            underscored: true
+            underscored: true,
+            defaultScope: {
+                attributes: { exclude: ['project_id', 'user_id'] }
+            }
         }
     )
     ProjectComment.associate = models => {

@@ -1,12 +1,12 @@
 const express = require('express')
 const passport = require('passport')
-const { ProjectComment } = require('../../models')
+const { ProjectComment, User } = require('../../models')
 
 const router = express.Router()
 
 router.route('/:id')
     .get((req, res) => {
-        ProjectComment.findById(req.params.id)
+        ProjectComment.findById(req.params.id, { include: { model: User, as: 'user' } })
             .then(comment => {
                 if (comment) {
                     res.json(comment)

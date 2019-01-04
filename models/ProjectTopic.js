@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'project_topics',
-            underscored: true
+            underscored: true,
+            defaultScope: {
+                attributes: { exclude: ['project_id'] }
+            }
         }
     )
 

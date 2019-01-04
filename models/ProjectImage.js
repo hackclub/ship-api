@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'project_images',
-            underscored: true
+            underscored: true,
+            defaultScope: {
+                attributes: { exclude: ['project_id'] }
+            }
         }
     )
     ProjectImage.associate = models => {

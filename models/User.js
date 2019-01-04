@@ -11,7 +11,18 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'users',
-            underscored: true
+            underscored: true,
+            defaultScope: {
+                attributes: {
+                    exclude: [
+                        'auth_token',
+                        'auth_token_created_at',
+                        'email',
+                        'github_id',
+                        'slack_id'
+                    ]
+                }
+            }
         }
     )
     User.associate = models => {

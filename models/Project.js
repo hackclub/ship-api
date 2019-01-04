@@ -22,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             tableName: 'projects',
-            underscored: true
+            underscored: true,
+            defaultScope: {
+                attributes: { exclude: ['main_image_id'] }
+            }
         }
     )
     slugifyModel(Project, {

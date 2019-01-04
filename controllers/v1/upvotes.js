@@ -1,12 +1,12 @@
 const express = require('express')
 const passport = require('passport')
-const { ProjectUpvote } = require('../../models')
+const { ProjectUpvote, User } = require('../../models')
 
 const router = express.Router()
 
 router.route('/:id')
     .get((req, res) => {
-        ProjectUpvote.findById(req.params.id)
+        ProjectUpvote.findById(req.params.id, { include: { model: User, as: 'user' } })
             .then(upvote => {
                 if (upvote) {
                     res.json(upvote)

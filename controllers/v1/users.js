@@ -56,8 +56,7 @@ router.route('/current')
 router.route('/username/:username')
     .get((req, res) => {
         User.findOne({
-            where: { username: req.params.username },
-            attributes: { exclude: ['auth_token', 'auth_token_created_at'] }
+            where: { username: req.params.username }
         }).then(user => {
             if (user) {
                 res.json(user)
@@ -70,7 +69,7 @@ router.route('/username/:username')
 
 router.route('/:id')
     .get((req, res) => {
-        User.findById(req.params.id, { attributes: { exclude: ['auth_token', 'auth_token_created_at'] } }).then(user => {
+        User.findById(req.params.id).then(user => {
             if (user) {
                 res.json(user)
             }
@@ -94,13 +93,11 @@ router.route('/:id/projects')
                             },
                             {
                                 model: ProjectImage,
-                                as: 'images',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'images'
                             },
                             {
                                 model: ProjectLink,
-                                as: 'links',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'links'
                             },
                             {
                                 model: Topic,
@@ -109,11 +106,9 @@ router.route('/:id/projects')
                             },
                             {
                                 model: ProjectImage,
-                                as: 'main_image',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'main_image'
                             }
                         ],
-                        attributes: { exclude: ['main_image_id'] },
                         joinTableAttributes: []
                     })
                         .then(projects => res.json(projects))
@@ -133,8 +128,7 @@ router.route('/:id/upvotes')
                         include: {
                             model: Project,
                             as: 'project'
-                        },
-                        attributes: { exclude: ['project_id', 'user_id'] }
+                        }
                     })
                         .then(upvotes => res.json(upvotes))
                 }

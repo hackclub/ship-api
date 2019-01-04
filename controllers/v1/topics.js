@@ -81,13 +81,11 @@ router.route('/:id/projects')
                             },
                             {
                                 model: ProjectImage,
-                                as: 'images',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'images'
                             },
                             {
                                 model: ProjectLink,
-                                as: 'links',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'links'
                             },
                             {
                                 model: Topic,
@@ -96,11 +94,9 @@ router.route('/:id/projects')
                             },
                             {
                                 model: ProjectImage,
-                                as: 'main_image',
-                                attributes: { exclude: ['project_id'] }
+                                as: 'main_image'
                             }
                         ],
-                        attributes: { exclude: ['main_image_id'] },
                         joinTableAttributes: []
                     })
                         .then(projects => res.json(projects))
