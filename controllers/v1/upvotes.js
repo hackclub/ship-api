@@ -1,4 +1,5 @@
 const express = require('express')
+const passport = require('passport')
 const { ProjectUpvote } = require('../../models')
 
 const router = express.Router()
@@ -15,11 +16,14 @@ router.route('/:id')
                 }
             })
     })
-    .delete((req, res) => {
-        ProjectUpvote.destroy({ where: { id: req.params.id } })
-            .then(() => {
-                res.status(202).json({ message: 'upvote deleted' })
-            })
-    })
+    .delete(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            ProjectUpvote.destroy({ where: { id: req.params.id } })
+                .then(() => {
+                    res.status(202).json({ message: 'upvote deleted' })
+                })
+        }
+    )
 
 module.exports = router

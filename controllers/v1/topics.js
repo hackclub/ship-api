@@ -1,4 +1,5 @@
 const express = require('express')
+const passport = require('passport')
 const { topicIndex } = require('../../helpers/search')
 const { ProjectImage, ProjectLink, Topic, User } = require('../../models')
 
@@ -8,17 +9,20 @@ router.route('/')
     .get((req, res) => {
         Topic.findAll().then(topics => res.json(topics))
     })
-    .post((req, res) => {
-        Topic.create(req.body)
-            .then(data => {
-                const obj = { ...data.dataValues, objectID: data.id }
-                topicIndex.addObject(obj)
-                res.status(201).json({ message: 'topic created', data })
-            })
-            .catch(e => {
-                res.status(422).json({ message: e.errors[0].message })
-            })
-    })
+    .post(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Topic.create(req.body)
+                .then(data => {
+                    const obj = { ...data.dataValues, objectID: data.id }
+                    topicIndex.addObject(obj)
+                    res.status(201).json({ message: 'topic created', data })
+                })
+                .catch(e => {
+                    res.status(422).json({ message: e.errors[0].message })
+                })
+        }
+    )
 
 router.route('/slug/:slug')
     .get((req, res) => {
@@ -43,19 +47,25 @@ router.route('/:id')
             }
         })
     })
-    .patch((req, res) => {
-        Topic.update(req.body, { where: { id: req.params.id } }).then(() => {
-            const obj = { ...req.body, objectID: req.params.id }
-            topicIndex.partialUpdateObject(obj)
-            res.status(202).json({ message: 'topic updated' })
-        })
-    })
-    .delete((req, res) => {
-        Topic.destroy({ where: { id: req.params.id } }).then(() => {
-            topicIndex.deleteObject(req.params.id)
-            res.status(202).json({ message: 'topic deleted' })
-        })
-    })
+    .patch(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Topic.update(req.body, { where: { id: req.params.id } }).then(() => {
+                const obj = { ...req.body, objectID: req.params.id }
+                topicIndex.partialUpdateObject(obj)
+                res.status(202).json({ message: 'topic updated' })
+            })
+        }
+    )
+    .delete(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Topic.destroy({ where: { id: req.params.id } }).then(() => {
+                topicIndex.deleteObject(req.params.id)
+                res.status(202).json({ message: 'topic deleted' })
+            })
+        }
+    )
 
 router.route('/:id/projects')
     .get((req, res) => {

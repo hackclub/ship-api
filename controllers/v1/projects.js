@@ -1,4 +1,5 @@
 const express = require('express')
+const passport = require('passport')
 const { projectIndex } = require('../../helpers/search')
 const { Project, ProjectComment, ProjectImage, ProjectLink, ProjectUpvote, Topic, User } = require('../../models')
 
@@ -38,17 +39,20 @@ router.route('/')
         })
             .then(projects => res.json(projects))
     })
-    .post((req, res) => {
-        Project.create(req.body)
-            .then(data => {
-                const obj = { ...data.dataValues, objectID: data.id }
-                projectIndex.addObject(obj)
-                res.status(201).json({ message: 'project created', data })
-            })
-            .catch(e => {
-                res.status(422).json({ message: e.errors[0].message })
-            })
-    })
+    .post(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Project.create(req.body)
+                .then(data => {
+                    const obj = { ...data.dataValues, objectID: data.id }
+                    projectIndex.addObject(obj)
+                    res.status(201).json({ message: 'project created', data })
+                })
+                .catch(e => {
+                    res.status(422).json({ message: e.errors[0].message })
+                })
+        }
+    )
 
 router.route('/slug/:slug')
     .get((req, res) => {
@@ -133,19 +137,25 @@ router.route('/:id')
             }
         })
     })
-    .patch((req, res) => {
-        Project.update(req.body, { where: { id: req.params.id } }).then(() => {
-            const obj = { ...req.body, objectID: req.params.id }
-            projectIndex.partialUpdateObject(obj)
-            res.status(202).json({ message: 'project updated' })
-        })
-    })
-    .delete((req, res) => {
-        Project.destroy({ where: { id: req.params.id } }).then(() => {
-            projectIndex.deleteObject(req.params.id)
-            res.status(202).json({ message: 'project deleted' })
-        })
-    })
+    .patch(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Project.update(req.body, { where: { id: req.params.id } }).then(() => {
+                const obj = { ...req.body, objectID: req.params.id }
+                projectIndex.partialUpdateObject(obj)
+                res.status(202).json({ message: 'project updated' })
+            })
+        }
+    )
+    .delete(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Project.destroy({ where: { id: req.params.id } }).then(() => {
+                projectIndex.deleteObject(req.params.id)
+                res.status(202).json({ message: 'project deleted' })
+            })
+        }
+    )
 
 router.route('/:id/comments')
     .get((req, res) => {
@@ -166,18 +176,21 @@ router.route('/:id/comments')
                 }
             })
     })
-    .post((req, res) => {
-        Project.findById(req.params.id)
-            .then(project => {
-                if (project) {
-                    ProjectComment.create(req.body)
-                        .then(comment => project.addComment(comment))
-                        .then(() => {
-                            res.status(201).json({ message: 'comment created' })
-                        })
-                }
-            })
-    })
+    .post(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Project.findById(req.params.id)
+                .then(project => {
+                    if (project) {
+                        ProjectComment.create(req.body)
+                            .then(comment => project.addComment(comment))
+                            .then(() => {
+                                res.status(201).json({ message: 'comment created' })
+                            })
+                    }
+                })
+        }
+    )
 
 router.route('/:id/upvotes')
     .get((req, res) => {
@@ -198,17 +211,20 @@ router.route('/:id/upvotes')
                 }
             })
     })
-    .post((req, res) => {
-        Project.findById(req.params.id)
-            .then(project => {
-                if (project) {
-                    ProjectUpvote.create(req.body)
-                        .then(upvote => project.addUpvote(upvote))
-                        .then(() => {
-                            res.status(201).json({ message: 'upvote created' })
-                        })
-                }
-            })
-    })
+    .post(
+        passport.authenticate('bearer', { session: false }),
+        (req, res) => {
+            Project.findById(req.params.id)
+                .then(project => {
+                    if (project) {
+                        ProjectUpvote.create(req.body)
+                            .then(upvote => project.addUpvote(upvote))
+                            .then(() => {
+                                res.status(201).json({ message: 'upvote created' })
+                            })
+                    }
+                })
+        }
+    )
 
 module.exports = router
