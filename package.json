@@ -3,8 +3,10 @@
     "version": "1.0.0",
     "description": "Hack Club Ship’s backend system.",
     "scripts": {
-        "dev": "nodemon -r dotenv/config app.js",
-        "start": "node app.js"
+        "build": "yarn clean && babel . --out-dir build --copy-files --ignore .git,node_modules",
+        "clean": "rm -rf build && mkdir build",
+        "dev": "nodemon -r dotenv/config --exec npx babel-node app.js",
+        "start": "yarn build && node build/app.js"
     },
     "repository": "https://github.com/hackclub/ship",
     "author": "Victor Truong <me@ifvictr.com>",
@@ -30,6 +32,10 @@
         "string-to-color": "^2.0.0"
     },
     "devDependencies": {
+        "@babel/cli": "^7.2.3",
+        "@babel/core": "^7.2.2",
+        "@babel/node": "^7.2.2",
+        "@babel/preset-env": "^7.2.3",
         "nodemon": "^1.18.3"
     }
 }
