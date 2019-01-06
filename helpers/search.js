@@ -1,6 +1,7 @@
-const algoliasearch = require('algoliasearch')
+import algoliasearch from 'algoliasearch'
+
 const client = algoliasearch(process.env.ALGOLIA_APPLICATION_ID, process.env.ALGOLIA_ADMIN_API_KEY)
 
-exports.projectIndex = client.initIndex('projects')
-exports.topicIndex = client.initIndex('topics')
-exports.userIndex = client.initIndex('users')
+export const projectIndex = client.initIndex('projects')
+export const topicIndex = client.initIndex('topics')
+export const userIndex = client.initIndex('users')

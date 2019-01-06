@@ -1,16 +1,16 @@
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const express = require('express')
-const helmet = require('helmet')
-const Knex = require('knex')
-const { kebabCase } = require('lodash')
-const { Model } = require('objection')
-const passport = require('passport')
-const BearerStrategy = require('passport-http-bearer').Strategy
-const GitHubStrategy = require('passport-github2').Strategy
-const SlackStrategy = require('passport-slack').Strategy
-const { User } = require('./models')
-const knexConfig = require('./knexfile')
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import express from 'express'
+import helmet from 'helmet'
+import Knex from 'knex'
+import { kebabCase } from 'lodash'
+import { Model } from 'objection'
+import passport from 'passport'
+import { Strategy as GitHubStrategy } from 'passport-github2'
+import { Strategy as BearerStrategy } from 'passport-http-bearer'
+import { Strategy as SlackStrategy } from 'passport-slack'
+import { User } from './models'
+import knexConfig from './knexfile'
 
 const env = process.env.NODE_ENV || 'development'
 const knex = Knex(knexConfig[env])
@@ -119,11 +119,16 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // Routes
-app.use('/v1/comments', require('./controllers/v1/comments'))
-app.use('/v1/projects', require('./controllers/v1/projects'))
-app.use('/v1/topics', require('./controllers/v1/topics'))
-app.use('/v1/upvotes', require('./controllers/v1/upvotes'))
-app.use('/v1/users', require('./controllers/v1/users'))
+import commentsController from './controllers/v1/comments'
+import projectsController from './controllers/v1/projects'
+import topicsController from './controllers/v1/topics'
+import upvotesController from './controllers/v1/upvotes'
+import usersController from './controllers/v1/users'
+app.use('/v1/comments', commentsController)
+app.use('/v1/projects', projectsController)
+app.use('/v1/topics', topicsController)
+app.use('/v1/upvotes', upvotesController)
+app.use('/v1/users', usersController)
 
 const port = process.env.PORT || 3000
 

@@ -1,9 +1,9 @@
-const crypto = require('crypto')
-const express = require('express')
-const passport = require('passport')
-const { User } = require('../../models')
+import crypto from 'crypto'
+import { Router } from 'express'
+import passport from 'passport'
+import { User } from '../../models'
 
-const router = express.Router()
+const router = Router()
 
 router.route('/auth/github')
     .get(passport.authenticate('github', { scope: ['user:email'] }))
@@ -112,4 +112,4 @@ router.route('/:id/upvotes')
             })
     })
 
-module.exports = router
+export default router

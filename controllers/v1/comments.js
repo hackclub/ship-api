@@ -1,8 +1,8 @@
-const express = require('express')
-const passport = require('passport')
-const { ProjectComment } = require('../../models')
+import { Router } from 'express'
+import passport from 'passport'
+import { ProjectComment } from '../../models'
 
-const router = express.Router()
+const router = Router()
 
 router.route('/:id')
     .get((req, res) => {
@@ -46,4 +46,4 @@ router.route('/:id')
         }
     )
 
-module.exports = router
+export default router
