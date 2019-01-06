@@ -30,7 +30,6 @@
         "string-to-color": "^2.0.0"
     },
     "devDependencies": {
-        "nodemon": "^1.18.3",
-        "sequelize-cli": "^4.0.0"
+        "nodemon": "^1.18.3"
     }
 }
