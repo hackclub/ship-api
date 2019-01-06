@@ -2,9 +2,9 @@ import { Router } from 'express'
 import passport from 'passport'
 import { ProjectComment } from '../../models'
 
-const router = Router()
+const CommentsController = Router()
 
-router.route('/:id')
+CommentsController.route('/:id')
     .get((req, res) => {
         ProjectComment.query()
             .findById(req.params.id)
@@ -46,4 +46,4 @@ router.route('/:id')
         }
     )
 
-export default router
+export default CommentsController

@@ -2,9 +2,9 @@ import { Router } from 'express'
 import passport from 'passport'
 import { ProjectUpvote } from '../../models'
 
-const router = Router()
+const UpvotesController = Router()
 
-router.route('/:id')
+UpvotesController.route('/:id')
     .get((req, res) => {
         ProjectUpvote.query()
             .findById(req.params.id)
@@ -32,4 +32,4 @@ router.route('/:id')
         }
     )
 
-export default router
+export default UpvotesController

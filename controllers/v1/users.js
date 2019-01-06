@@ -3,12 +3,12 @@ import { Router } from 'express'
 import passport from 'passport'
 import { User } from '../../models'
 
-const router = Router()
+const UsersController = Router()
 
-router.route('/auth/github')
+UsersController.route('/auth/github')
     .get(passport.authenticate('github', { scope: ['user:email'] }))
 
-router.route('/auth/github/callback')
+UsersController.route('/auth/github/callback')
     .get(
         passport.authenticate('github', { failureRedirect: `${process.env.SITE_URL}/login?status=failed` }),
         (req, res) => {
@@ -25,10 +25,10 @@ router.route('/auth/github/callback')
         }
     )
 
-router.route('/auth/slack')
+UsersController.route('/auth/slack')
     .get(passport.authenticate('slack'))
 
-router.route('/auth/slack/callback')
+UsersController.route('/auth/slack/callback')
     .get(
         passport.authenticate('slack', { failureRedirect: `${process.env.SITE_URL}/login?status=failed` }),
         (req, res) => {
@@ -45,7 +45,7 @@ router.route('/auth/slack/callback')
         }
     )
 
-router.route('/current')
+UsersController.route('/current')
     .get(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
@@ -57,7 +57,7 @@ router.route('/current')
         }
     )
 
-router.route('/username/:username')
+UsersController.route('/username/:username')
     .get((req, res) => {
         User.query()
             .findOne('username', req.params.username)
@@ -70,7 +70,7 @@ router.route('/username/:username')
             })
     })
 
-router.route('/:id')
+UsersController.route('/:id')
     .get((req, res) => {
         User.query()
             .findById(req.params.id)
@@ -83,7 +83,7 @@ router.route('/:id')
             })
     })
 
-router.route('/:id/projects')
+UsersController.route('/:id/projects')
     .get((req, res) => {
         User.query()
             .findById(req.params.id)
@@ -98,7 +98,7 @@ router.route('/:id/projects')
             })
     })
 
-router.route('/:id/upvotes')
+UsersController.route('/:id/upvotes')
     .get((req, res) => {
         User.query()
             .findById(req.params.id)
@@ -112,4 +112,4 @@ router.route('/:id/upvotes')
             })
     })
 
-export default router
+export default UsersController

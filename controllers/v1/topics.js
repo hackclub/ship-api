@@ -3,9 +3,9 @@ import passport from 'passport'
 import { topicIndex } from '../../helpers/search'
 import { Topic } from '../../models'
 
-const router = Router()
+const TopicsController = Router()
 
-router.route('/')
+TopicsController.route('/')
     .get((req, res) => {
         Topic.query().then(topics => res.json(topics))
     })
@@ -25,7 +25,7 @@ router.route('/')
         }
     )
 
-router.route('/slug/:slug')
+TopicsController.route('/slug/:slug')
     .get((req, res) => {
         Topic.query()
             .findOne('slug', req.params.slug)
@@ -38,7 +38,7 @@ router.route('/slug/:slug')
             })
     })
 
-router.route('/:id')
+TopicsController.route('/:id')
     .get((req, res) => {
         Topic.query()
             .findById(req.params.id)
@@ -82,7 +82,7 @@ router.route('/:id')
         }
     )
 
-router.route('/:id/projects')
+TopicsController.route('/:id/projects')
     .get((req, res) => {
         Topic.query()
             .findById(req.params.id)
@@ -97,4 +97,4 @@ router.route('/:id/projects')
             })
     })
 
-export default router
+export default TopicsController

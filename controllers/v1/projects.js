@@ -3,9 +3,9 @@ import passport from 'passport'
 import { projectIndex } from '../../helpers/search'
 import { Project, ProjectComment, ProjectUpvote } from '../../models'
 
-const router = Router()
+const ProjectsController = Router()
 
-router.route('/')
+ProjectsController.route('/')
     .get((req, res) => {
         Project.query()
             .eager('[creators, images, links, topics, main_image]')
@@ -27,7 +27,7 @@ router.route('/')
         }
     )
 
-router.route('/slug/:slug')
+ProjectsController.route('/slug/:slug')
     .get((req, res) => {
         Project.query()
             .findOne('slug', req.params.slug)
@@ -41,7 +41,7 @@ router.route('/slug/:slug')
             })
     })
 
-router.route('/:id')
+ProjectsController.route('/:id')
     .get((req, res) => {
         Project.query()
             .findById(req.params.id)
@@ -86,7 +86,7 @@ router.route('/:id')
         }
     )
 
-router.route('/:id/comments')
+ProjectsController.route('/:id/comments')
     .get((req, res) => {
         Project.query()
             .findById(req.params.id)
@@ -118,7 +118,7 @@ router.route('/:id/comments')
         }
     )
 
-router.route('/:id/upvotes')
+ProjectsController.route('/:id/upvotes')
     .get((req, res) => {
         Project.query()
             .findById(req.params.id)
@@ -150,4 +150,4 @@ router.route('/:id/upvotes')
         }
     )
 
-export default router
+export default ProjectsController
