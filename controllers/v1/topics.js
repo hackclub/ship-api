@@ -1,9 +1,9 @@
-import express from 'express'
+import { Router } from 'express'
 import passport from 'passport'
 import { topicIndex } from '../../helpers/search'
 import { Topic } from '../../models'
 
-const router = express.Router()
+const router = Router()
 
 router.route('/')
     .get((req, res) => {

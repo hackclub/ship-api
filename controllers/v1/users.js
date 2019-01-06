@@ -1,9 +1,9 @@
 import crypto from 'crypto'
-import express from 'express'
+import { Router } from 'express'
 import passport from 'passport'
 import { User } from '../../models'
 
-const router = express.Router()
+const router = Router()
 
 router.route('/auth/github')
     .get(passport.authenticate('github', { scope: ['user:email'] }))
