@@ -64,7 +64,8 @@ passport.use(new GitHubStrategy(
                         .insert({
                             email: githubEmail,
                             username: profile.username,
-                            github_id: profile.id
+                            github_id: profile.id,
+                            avatar_url: profile.photos[0].value
                         })
                         .then(newUser => {
                             done(null, newUser)
@@ -83,6 +84,7 @@ passport.use(new SlackStrategy(
         scope: ['identity.basic']
     },
     (accessToken, refreshToken, profile, done) => {
+        console.log(profile)
         User.query()
             .where('email', profile.user.email) // User is already in database, but hasn't linked Slack
             .orWhere('slack_id', profile.user.id) // User has linked Slack already
@@ -93,7 +95,8 @@ passport.use(new SlackStrategy(
                         .insert({
                             email: profile.user.email,
                             username: kebabCase(profile.username),
-                            slack_id: profile.user.id
+                            slack_id: profile.user.id,
+                            avatar_url: profile.user.image_192
                         })
                         .then(newUser => {
                             done(null, newUser)
