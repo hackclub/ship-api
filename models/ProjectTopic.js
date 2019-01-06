@@ -1,18 +1,36 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectTopic = sequelize.define(
-        'ProjectTopic',
-        {
-            project_id: DataTypes.INTEGER,
-            topic_id: DataTypes.INTEGER
-        },
-        {
-            tableName: 'project_topics',
-            underscored: true,
-            defaultScope: {
-                attributes: { exclude: ['project_id'] }
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class ProjectTopic extends timestamps(Model) {
+    static get tableName() {
+        return 'project_topics'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, Topic } = require('.')
+        return {
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_topics.project_id',
+                    to: 'projects.id'
+                }
+            },
+            topic: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Topic,
+                join: {
+                    from: 'project_topics.topic_id',
+                    to: 'topics.id'
+                }
             }
         }
-    )
-
-    return ProjectTopic
+    }
 }
+
+module.exports = ProjectTopic

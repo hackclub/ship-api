@@ -1,26 +1,32 @@
 const express = require('express')
 const passport = require('passport')
-const { ProjectComment, User } = require('../../models')
+const { ProjectComment } = require('../../models')
 
 const router = express.Router()
 
 router.route('/:id')
     .get((req, res) => {
-        ProjectComment.findById(req.params.id, { include: { model: User, as: 'user' } })
+        ProjectComment.query()
+            .findById(req.params.id)
+            .eager('user')
             .then(comment => {
-                if (comment) {
-                    res.json(comment)
-                }
-                else {
+                if (!comment) {
                     res.status(404).json({ message: 'comment not found' })
+                    return
                 }
+                res.json(comment)
             })
     })
     .patch(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            ProjectComment.update(req.body, { where: { id: req.params.id } })
-                .then(() => {
+            ProjectComment.query()
+                .patchAndFetchById(req.params.id, req.body)
+                .then(comment => {
+                    if (!comment) {
+                        res.status(404).json({ message: 'comment not found' })
+                        return
+                    }
                     res.status(202).json({ message: 'comment updated' })
                 })
         }
@@ -28,8 +34,13 @@ router.route('/:id')
     .delete(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            ProjectComment.destroy({ where: { id: req.params.id } })
-                .then(() => {
+            ProjectComment.query()
+                .deleteById(req.params.id)
+                .then(deletedCount => {
+                    if (!deletedCount) {
+                        res.status(404).json({ message: 'comment not found' })
+                        return
+                    }
                     res.status(202).json({ message: 'comment deleted' })
                 })
         }

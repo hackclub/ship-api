@@ -1,32 +1,36 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectUpvote = sequelize.define(
-        'ProjectUpvote',
-        {
-            project_id: DataTypes.INTEGER,
-            user_id: DataTypes.INTEGER
-        },
-        {
-            tableName: 'project_upvotes',
-            underscored: true,
-            defaultScope: {
-                attributes: {
-                    exclude: ['created_at', 'updated_at', 'project_id', 'user_id']
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class ProjectUpvote extends timestamps(Model) {
+    static get tableName() {
+        return 'project_upvotes'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, User } = require('.')
+        return {
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_upvotes.project_id',
+                    to: 'projects.id'
+                }
+            },
+            user: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: User,
+                join: {
+                    from: 'project_upvotes.user_id',
+                    to: 'users.id'
                 }
             }
         }
-    )
-    ProjectUpvote.associate = models => {
-        ProjectUpvote.belongsTo(models.Project, {
-            as: 'project',
-            foreignKey: 'project_id',
-            allowNull: false
-        })
-        ProjectUpvote.belongsTo(models.User, {
-            as: 'user',
-            foreignKey: 'user_id',
-            allowNull: false
-        })
     }
-
-    return ProjectUpvote
 }
+
+module.exports = ProjectUpvote

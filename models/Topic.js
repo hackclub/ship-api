@@ -1,63 +1,33 @@
-const isHexColor = require('is-hex-color')
-const { slugifyModel } = require('sequelize-slugify')
-const stringToColor = require('string-to-color')
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
 
-module.exports = (sequelize, DataTypes) => {
-    const Topic = sequelize.define(
-        'Topic',
-        {
-            name: {
-                type: DataTypes.STRING,
-                validate: {
-                    notEmpty: {
-                        msg: 'topic needs to have a name'
-                    }
-                }
-            },
-            slug: {
-                unique: true,
-                type: DataTypes.STRING
-            },
-            color: {
-                type: DataTypes.STRING,
-                validate: {
-                    isHexColor: val => {
-                        if (!isHexColor(val)) {
-                            throw new Error('topic has an invalid color (needs to be in hex form)')
-                        }
-                    }
-                }
-            },
-            description: DataTypes.STRING
-        },
-        {
-            tableName: 'topics',
-            underscored: true
-        }
-    )
-    slugifyModel(Topic, {
-        source: ['name'],
-        slugOptions: {
-            symbol: false,
-            lower: true
-        },
-        overwrite: false
-    })
-    // Generates a hex color for the topic if one wasn't specified
-    Topic.hook('beforeCreate', topic => {
-        if (!topic.color) {
-            topic.color = stringToColor(topic.name)
-        }
-    })
-    Topic.associate = models => {
-        Topic.belongsToMany(models.Project, {
-            through: models.ProjectTopic,
-            foreignKey: {
-                name: 'topic_id',
-                allowNull: false,
-            }
-        })
+class Topic extends timestamps(Model) {
+    static get tableName() {
+        return 'topics'
     }
 
-    return Topic
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, ProjectTopic } = require('.')
+        return {
+            projects: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Project,
+                join: {
+                    from: 'topics.id',
+                    through: {
+                        modelClass: ProjectTopic,
+                        from: 'project_topics.topic_id',
+                        to: 'project_topics.project_id'
+                    },
+                    to: 'projects.id'
+                }
+            }
+        }
+    }
 }
+
+module.exports = Topic

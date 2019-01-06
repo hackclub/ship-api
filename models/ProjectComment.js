@@ -1,31 +1,44 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectComment = sequelize.define(
-        'ProjectComment',
-        {
-            project_id: DataTypes.INTEGER,
-            user_id: DataTypes.INTEGER,
-            parent_id: DataTypes.INTEGER,
-            body: DataTypes.TEXT
-        },
-        {
-            tableName: 'project_comments',
-            underscored: true,
-            defaultScope: {
-                attributes: { exclude: ['project_id', 'user_id'] }
-            }
-        }
-    )
-    ProjectComment.associate = models => {
-        ProjectComment.belongsTo(models.Project, {
-            foreignKey: 'project_id',
-            allowNull: false
-        })
-        ProjectComment.belongsTo(models.User, {
-            as: 'user',
-            foreignKey: 'user_id',
-            allowNull: false
-        })
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class ProjectComment extends timestamps(Model) {
+    static get tableName() {
+        return 'project_comments'
     }
 
-    return ProjectComment
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, ProjectComment, User } = require('.')
+        return {
+            parent: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: ProjectComment,
+                join: {
+                    from: 'project_comments.parent_id',
+                    to: 'project_comments.id'
+                }
+            },
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_comments.project_id',
+                    to: 'projects.id'
+                }
+            },
+            user: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: User,
+                join: {
+                    from: 'project_comments.user_id',
+                    to: 'users.id'
+                }
+            }
+        }
+    }
 }
+
+module.exports = ProjectComment

@@ -2,13 +2,19 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const express = require('express')
 const helmet = require('helmet')
+const Knex = require('knex')
 const { kebabCase } = require('lodash')
+const { Model } = require('objection')
 const passport = require('passport')
 const BearerStrategy = require('passport-http-bearer').Strategy
 const GitHubStrategy = require('passport-github2').Strategy
 const SlackStrategy = require('passport-slack').Strategy
-const { User, Sequelize, sequelize } = require('./models')
-const { Op } = Sequelize
+const { User } = require('./models')
+const knexConfig = require('./knexfile')
+
+const env = process.env.NODE_ENV || 'development'
+const knex = Knex(knexConfig[env])
+Model.knex(knex)
 const app = express()
 
 passport.serializeUser((user, done) => {
@@ -16,19 +22,23 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => {
-        done(null, user)
-    })
+    User.query()
+        .findById(id)
+        .then(user => {
+            done(null, user)
+        })
 })
 
 // Set up Passport
 passport.use(new BearerStrategy(
     (token, done) => {
-        User.findOne({ where: { auth_token: token } }).then(user => {
-            if (user) {
-                done(null, user)
-            }
-        })
+        User.query()
+            .findOne('auth_token', token)
+            .then(user => {
+                if (user) {
+                    done(null, user)
+                }
+            })
     }
 ))
 passport.use(new GitHubStrategy(
@@ -40,23 +50,26 @@ passport.use(new GitHubStrategy(
     (accessToken, refreshToken, profile, done) => {
         const hasGitHubEmail = profile.hasOwnProperty('emails') && profile.emails.length > 0
         const githubEmail = hasGitHubEmail ? profile.emails[0].value : null
-        // TODO: Fail when no email is found
-        User.findOrCreate({
-            where: {
-                [Op.or]: [
-                    { email: githubEmail }, // User is already in database, but hasn't linked GitHub
-                    { github_id: profile.id } // User has linked GitHub already
-                ]
-            },
-            defaults: {
-                email: githubEmail,
-                username: profile.username,
-                github_id: profile.id
-            }
-        })
-            .spread((user, created) => {
-                if (created) {
-                    console.log('New user created using GitHub')
+        if (!hasGitHubEmail) {
+            done(null, false)
+            return
+        }
+        User.query()
+            .where('email', githubEmail) // User is already in database, but hasn't linked GitHub
+            .orWhere('github_id', profile.id) // User has linked GitHub already
+            .first()
+            .then(user => {
+                if (!user) {
+                    User.query()
+                        .insert({
+                            email: githubEmail,
+                            username: profile.username,
+                            github_id: profile.id
+                        })
+                        .then(newUser => {
+                            done(null, newUser)
+                        })
+                    return
                 }
                 done(null, user)
             })
@@ -70,22 +83,22 @@ passport.use(new SlackStrategy(
         scope: ['identity.basic']
     },
     (accessToken, refreshToken, profile, done) => {
-        User.findOrCreate({
-            where: {
-                [Op.or]: [
-                    { email: profile.user.email }, // User is already in database, but hasn't linked Slack
-                    { slack_id: profile.user.id } // User has linked Slack already
-                ]
-            },
-            defaults: {
-                email: profile.user.email,
-                username: kebabCase(profile.user.name),
-                slack_id: profile.user.id
-            }
-        })
-            .spread((user, created) => {
-                if (created) {
-                    console.log('New user created using Slack')
+        User.query()
+            .where('email', profile.user.email) // User is already in database, but hasn't linked Slack
+            .orWhere('slack_id', profile.user.id) // User has linked Slack already
+            .first()
+            .then(user => {
+                if (!user) {
+                    User.query()
+                        .insert({
+                            email: profile.user.email,
+                            username: kebabCase(profile.username),
+                            slack_id: profile.user.id
+                        })
+                        .then(newUser => {
+                            done(null, newUser)
+                        })
+                    return
                 }
                 done(null, user)
             })
@@ -114,9 +127,11 @@ app.use('/v1/users', require('./controllers/v1/users'))
 
 const port = process.env.PORT || 3000
 
-sequelize.authenticate()
+// Ensure database connection
+knex.raw('SELECT 1')
     .then(() => {
-        console.log('Connected to database')
-        app.listen(port, () => console.log(`Listening on port ${port}`))
+        app.listen(port, () => {
+            console.log(`Listening on port ${port}`)
+        })
     })
     .catch(console.error)

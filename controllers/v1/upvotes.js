@@ -1,26 +1,32 @@
 const express = require('express')
 const passport = require('passport')
-const { ProjectUpvote, User } = require('../../models')
+const { ProjectUpvote } = require('../../models')
 
 const router = express.Router()
 
 router.route('/:id')
     .get((req, res) => {
-        ProjectUpvote.findById(req.params.id, { include: { model: User, as: 'user' } })
+        ProjectUpvote.query()
+            .findById(req.params.id)
+            .eager('user')
             .then(upvote => {
-                if (upvote) {
-                    res.json(upvote)
-                }
-                else {
+                if (!upvote) {
                     res.status(404).json({ message: 'upvote not found' })
+                    return
                 }
+                res.json(upvote)
             })
     })
     .delete(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            ProjectUpvote.destroy({ where: { id: req.params.id } })
-                .then(() => {
+            ProjectUpvote.query()
+                .deleteById(req.params.id)
+                .then(deletedCount => {
+                    if (!deletedCount) {
+                        res.status(404).json({ message: 'upvote not found' })
+                        return
+                    }
                     res.status(202).json({ message: 'upvote deleted' })
                 })
         }

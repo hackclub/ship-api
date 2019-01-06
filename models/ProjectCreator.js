@@ -1,15 +1,36 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectCreator = sequelize.define(
-        'ProjectCreator',
-        {
-            project_id: DataTypes.INTEGER,
-            user_id: DataTypes.INTEGER
-        },
-        {
-            tableName: 'project_creators',
-            underscored: true
-        }
-    )
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
 
-    return ProjectCreator
+class ProjectCreator extends timestamps(Model) {
+    static get tableName() {
+        return 'project_creators'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, User } = require('.')
+        return {
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_creators.project_id',
+                    to: 'projects.id'
+                }
+            },
+            user: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: User,
+                join: {
+                    from: 'project_creators.user_id',
+                    to: 'users.id'
+                }
+            }
+        }
+    }
 }
+
+module.exports = ProjectCreator

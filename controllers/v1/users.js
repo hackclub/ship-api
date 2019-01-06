@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const express = require('express')
 const passport = require('passport')
-const { Project, ProjectImage, ProjectLink, Topic, User } = require('../../models')
+const { User } = require('../../models')
 
 const router = express.Router()
 
@@ -17,9 +17,11 @@ router.route('/auth/github/callback')
                 auth_token: authToken,
                 auth_token_created_at: new Date().toISOString()
             }
-            User.update(data, { where: { id: req.user.id } }).then(() => {
-                res.redirect(`${process.env.SITE_URL}/login?status=success&auth_token=${authToken}`)
-            })
+            User.query()
+                .patchAndFetchById(req.user.id, data)
+                .then(() => {
+                    res.redirect(`${process.env.SITE_URL}/login?status=success&auth_token=${authToken}`)
+                })
         }
     )
 
@@ -35,9 +37,11 @@ router.route('/auth/slack/callback')
                 auth_token: authToken,
                 auth_token_created_at: new Date().toISOString()
             }
-            User.update(data, { where: { id: req.user.id } }).then(() => {
-                res.redirect(`${process.env.SITE_URL}/login?status=success&auth_token=${authToken}`)
-            })
+            User.query()
+                .patchAndFetchById(req.user.id, data)
+                .then(() => {
+                    res.redirect(`${process.env.SITE_URL}/login?status=success&auth_token=${authToken}`)
+                })
         }
     )
 
@@ -55,86 +59,56 @@ router.route('/current')
 
 router.route('/username/:username')
     .get((req, res) => {
-        User.findOne({
-            where: { username: req.params.username }
-        }).then(user => {
-            if (user) {
+        User.query()
+            .findOne('username', req.params.username)
+            .then(user => {
+                if (!user) {
+                    res.status(404).json({ message: 'user not found' })
+                    return
+                }
                 res.json(user)
-            }
-            else {
-                res.status(404).json({ message: 'user not found' })
-            }
-        })
+            })
     })
 
 router.route('/:id')
     .get((req, res) => {
-        User.findById(req.params.id).then(user => {
-            if (user) {
+        User.query()
+            .findById(req.params.id)
+            .then(user => {
+                if (!user) {
+                    res.status(404).json({ message: 'user not found' })
+                    return
+                }
                 res.json(user)
-            }
-            else {
-                res.status(404).json({ message: 'user not found' })
-            }
-        })
+            })
     })
 
 router.route('/:id/projects')
     .get((req, res) => {
-        User.findById(req.params.id)
+        User.query()
+            .findById(req.params.id)
             .then(user => {
-                if (user) {
-                    user.getProjects({
-                        include: [
-                            {
-                                model: User,
-                                as: 'creators',
-                                through: { attributes: [] }
-                            },
-                            {
-                                model: ProjectImage,
-                                as: 'images'
-                            },
-                            {
-                                model: ProjectLink,
-                                as: 'links'
-                            },
-                            {
-                                model: Topic,
-                                as: 'topics',
-                                through: { attributes: [] }
-                            },
-                            {
-                                model: ProjectImage,
-                                as: 'main_image'
-                            }
-                        ],
-                        joinTableAttributes: []
-                    })
-                        .then(projects => res.json(projects))
-                }
-                else {
+                if (!user) {
                     res.status(404).json({ message: 'user not found' })
+                    return
                 }
+                user.$relatedQuery('projects')
+                    .eager('[creators, images, links, topics, main_image]')
+                    .then(projects => res.json(projects))
             })
     })
 
 router.route('/:id/upvotes')
     .get((req, res) => {
-        User.findById(req.params.id)
+        User.query()
+            .findById(req.params.id)
             .then(user => {
-                if (user) {
-                    user.getUpvotes({
-                        include: {
-                            model: Project,
-                            as: 'project'
-                        }
-                    })
-                        .then(upvotes => res.json(upvotes))
+                if (!user) {
+                    res.status(404).json({ message: 'user not found' })
+                    return
                 }
-                else {
-                    res.status(404).json({ message: 'project not found' })
-                }
+                user.$relatedQuery('upvotes')
+                    .then(upvotes => res.json(upvotes))
             })
     })
 

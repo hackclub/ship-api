@@ -1,48 +1,25 @@
 const express = require('express')
 const passport = require('passport')
 const { projectIndex } = require('../../helpers/search')
-const { Project, ProjectComment, ProjectImage, ProjectLink, ProjectUpvote, Topic, User } = require('../../models')
+const { Project, ProjectComment, ProjectUpvote } = require('../../models')
 
 const router = express.Router()
 
 router.route('/')
     .get((req, res) => {
-        Project.findAll({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'images'
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links'
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'main_image'
-                }
-            ]
-        })
+        Project.query()
+            .eager('[creators, images, links, topics, main_image]')
             .then(projects => res.json(projects))
     })
     .post(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Project.create(req.body)
-                .then(data => {
-                    const obj = { ...data.dataValues, objectID: data.id }
+            Project.query()
+                .insert(req.body)
+                .then(project => {
+                    const obj = { ...project.dataValues, objectID: project.id }
                     projectIndex.addObject(obj)
-                    res.status(201).json({ message: 'project created', data })
+                    res.status(201).json({ message: 'project created', data: project })
                 })
                 .catch(e => {
                     res.status(422).json({ message: e.errors[0].message })
@@ -52,163 +29,123 @@ router.route('/')
 
 router.route('/slug/:slug')
     .get((req, res) => {
-        Project.findOne({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'images'
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links'
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'main_image'
+        Project.query()
+            .findOne('slug', req.params.slug)
+            .eager('[creators, images, links, topics, main_image]')
+            .then(project => {
+                if (!project) {
+                    res.status(404).json({ message: 'project not found' })
+                    return
                 }
-            ],
-            where: { slug: req.params.slug }
-        }).then(project => {
-            if (project) {
                 res.json(project)
-            }
-            else {
-                res.status(404).json({ message: 'project not found' })
-            }
-        })
+            })
     })
 
 router.route('/:id')
     .get((req, res) => {
-        Project.findOne({
-            include: [
-                {
-                    model: User,
-                    as: 'creators',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'images'
-                },
-                {
-                    model: ProjectLink,
-                    as: 'links'
-                },
-                {
-                    model: Topic,
-                    as: 'topics',
-                    through: { attributes: [] }
-                },
-                {
-                    model: ProjectImage,
-                    as: 'main_image'
+        Project.query()
+            .findById(req.params.id)
+            .eager('[creators, images, links, topics, main_image]')
+            .then(project => {
+                if (!project) {
+                    res.status(404).json({ message: 'project not found' })
+                    return
                 }
-            ],
-            where: { id: req.params.id }
-        }).then(project => {
-            if (project) {
                 res.json(project)
-            }
-            else {
-                res.status(404).json({ message: 'project not found' })
-            }
-        })
+            })
     })
     .patch(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Project.update(req.body, { where: { id: req.params.id } }).then(() => {
-                const obj = { ...req.body, objectID: req.params.id }
-                projectIndex.partialUpdateObject(obj)
-                res.status(202).json({ message: 'project updated' })
-            })
+            Project.query()
+                .patchAndFetchById(req.params.id, req.body)
+                .then(project => {
+                    if (!project) {
+                        res.json(404).json({ message: 'project not found' })
+                        return
+                    }
+                    const obj = { ...project, objectID: req.params.id }
+                    projectIndex.partialUpdateObject(obj)
+                    res.status(202).json({ message: 'project updated' })
+                })
         }
     )
     .delete(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Project.destroy({ where: { id: req.params.id } }).then(() => {
-                projectIndex.deleteObject(req.params.id)
-                res.status(202).json({ message: 'project deleted' })
-            })
+            Project.query()
+                .deleteById(req.params.id)
+                .then(deletedCount => {
+                    if (!deletedCount) {
+                        res.status(404).json({ message: 'project not found' })
+                        return
+                    }
+                    projectIndex.deleteObject(req.params.id)
+                    res.status(202).json({ message: 'project deleted' })
+                })
         }
     )
 
 router.route('/:id/comments')
     .get((req, res) => {
-        Project.findById(req.params.id)
+        Project.query()
+            .findById(req.params.id)
             .then(project => {
-                if (project) {
-                    project.getComments({
-                        include: {
-                            model: User,
-                            as: 'user'
-                        }
-                    })
-                        .then(comments => res.json(comments))
-                }
-                else {
+                if (!project) {
                     res.status(404).json({ message: 'project not found' })
+                    return
                 }
+                project.$relatedQuery('comments')
+                    .then(comments => res.json(comments))
             })
     })
     .post(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Project.findById(req.params.id)
+            Project.query()
+                .findById(req.params.id)
                 .then(project => {
-                    if (project) {
-                        ProjectComment.create(req.body)
-                            .then(comment => project.addComment(comment))
-                            .then(() => {
-                                res.status(201).json({ message: 'comment created' })
-                            })
+                    if (!project) {
+                        res.status(404).json({ message: 'project not found' })
+                        return
                     }
+                    ProjectComment.query()
+                        .insert({ ...req.body, project_id: req.params.id, user_id: req.user.id })
+                        .then(() => {
+                            res.status(201).json({ message: 'comment created' })
+                        })
                 })
         }
     )
 
 router.route('/:id/upvotes')
     .get((req, res) => {
-        Project.findById(req.params.id)
+        Project.query()
+            .findById(req.params.id)
             .then(project => {
-                if (project) {
-                    project.getUpvotes({
-                        include: {
-                            model: User,
-                            as: 'user'
-                        }
-                    })
-                        .then(upvotes => res.json(upvotes))
-                }
-                else {
+                if (!project) {
                     res.status(404).json({ message: 'project not found' })
+                    return
                 }
+                project.$relatedQuery('upvotes')
+                    .then(upvotes => res.json(upvotes))
             })
     })
     .post(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Project.findById(req.params.id)
+            Project.query()
+                .findById(req.params.id)
                 .then(project => {
-                    if (project) {
-                        ProjectUpvote.create(req.body)
-                            .then(upvote => project.addUpvote(upvote))
-                            .then(() => {
-                                res.status(201).json({ message: 'upvote created' })
-                            })
+                    if (!project) {
+                        res.status(404).json({ message: 'project not found' })
+                        return
                     }
+                    ProjectUpvote.query()
+                        .insert({ project_id: req.params.id, user_id: req.user.id })
+                        .then(() => {
+                            res.status(201).json({ message: 'upvote created' })
+                        })
                 })
         }
     )
