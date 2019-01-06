@@ -1,14 +1,11 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.addColumn(
-            'users',
-            'github_id',
-            {
-                type: Sequelize.INTEGER
-            }
-        )
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.removeColumn('users', 'github_id')
-    }
+exports.up = knex => {
+    return knex.schema.table('users', table => {
+        table.integer('github_id')
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.table('users', table => {
+        table.dropColumn('github_id')
+    })
 }

@@ -1,15 +1,11 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.addColumn(
-            'projects',
-            'slug',
-            {
-                unique: true,
-                type: Sequelize.STRING
-            }
-        )
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.removeColumn('projects', 'slug')
-    }
+exports.up = knex => {
+    return knex.schema.table('projects', table => {
+        table.string('slug').unique()
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.table('projects', table => {
+        table.dropColumn('slug')
+    })
 }

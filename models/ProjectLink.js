@@ -1,23 +1,28 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectLink = sequelize.define(
-        'ProjectLink',
-        {
-            project_id: DataTypes.INTEGER,
-            url: DataTypes.STRING
-        },
-        {
-            tableName: 'project_links',
-            underscored: true,
-            defaultScope: {
-                attributes: {
-                    exclude: ['created_at', 'updated_at', 'project_id']
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class ProjectLink extends timestamps(Model) {
+    static get tableName() {
+        return 'project_links'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project } = require('.')
+        return {
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_links.project_id',
+                    to: 'projects.id'
                 }
             }
         }
-    )
-    ProjectLink.associate = models => {
-        ProjectLink.belongsTo(models.Project)
     }
-
-    return ProjectLink
 }
+
+module.exports = ProjectLink

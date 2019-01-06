@@ -1,14 +1,11 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.addColumn(
-            'users',
-            'slack_id',
-            {
-                type: Sequelize.STRING
-            }
-        )
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.removeColumn('users', 'slack_id')
-    }
+exports.up = knex => {
+    return knex.schema.table('users', table => {
+        table.string('slack_id')
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.table('users', table => {
+        table.dropColumn('slack_id')
+    })
 }

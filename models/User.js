@@ -1,54 +1,49 @@
-module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define(
-        'User',
-        {
-            email: DataTypes.STRING,
-            username: DataTypes.STRING,
-            github_id: DataTypes.INTEGER,
-            slack_id: DataTypes.STRING,
-            auth_token: DataTypes.STRING,
-            auth_token_created_at: DataTypes.DATE
-        },
-        {
-            tableName: 'users',
-            underscored: true,
-            defaultScope: {
-                attributes: {
-                    exclude: [
-                        'auth_token',
-                        'auth_token_created_at',
-                        'email',
-                        'github_id',
-                        'slack_id',
-                        'updated_at'
-                    ]
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class User extends timestamps(Model) {
+    static get tableName() {
+        return 'users'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project, ProjectComment, ProjectCreator, ProjectUpvote } = require('.')
+        return {
+            comments: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectComment,
+                join: {
+                    from: 'users.id',
+                    to: 'project_comments.user_id'
+                }
+            },
+            projects: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Project,
+                join: {
+                    from: 'users.id',
+                    through: {
+                        modelClass: ProjectCreator,
+                        from: 'project_creators.user_id',
+                        to: 'project_creators.project_id'
+                    },
+                    to: 'projects.id'
+                }
+            },
+            upvotes: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectUpvote,
+                join: {
+                    from: 'users.id',
+                    to: 'project_upvotes.user_id'
                 }
             }
         }
-    )
-    User.associate = models => {
-        User.hasMany(models.ProjectComment, {
-            foreignKey: {
-                name: 'user_id',
-                allowNull: false
-            },
-            as: 'comments'
-        })
-        User.belongsToMany(models.Project, {
-            through: models.ProjectCreator,
-            foreignKey: {
-                name: 'user_id',
-                allowNull: false,
-            }
-        })
-        User.hasMany(models.ProjectUpvote, {
-            foreignKey: {
-                name: 'user_id',
-                allowNull: false
-            },
-            as: 'upvotes'
-        })
     }
-
-    return User
 }
+
+module.exports = User

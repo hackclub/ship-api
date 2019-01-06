@@ -1,84 +1,86 @@
-const { slugifyModel } = require('sequelize-slugify')
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
 
-module.exports = (sequelize, DataTypes) => {
-    const Project = sequelize.define(
-        'Project',
-        {
-            name: {
-                type: DataTypes.STRING,
-                validate: {
-                    notEmpty: {
-                        msg: 'topic needs to have a name'
-                    }
-                }
-            },
-            slug: {
-                unique: true,
-                type: DataTypes.STRING,
-            },
-            main_image_id: DataTypes.INTEGER,
-            tagline: DataTypes.STRING,
-            description: DataTypes.TEXT
-        },
-        {
-            tableName: 'projects',
-            underscored: true,
-            defaultScope: {
-                attributes: { exclude: ['main_image_id'] }
-            }
-        }
-    )
-    slugifyModel(Project, {
-        source: ['name'],
-        // suffixSource: ['id'], // Current being ignored by sequelize-slugify
-        slugOptions: {
-            symbol: false,
-            lower: true
-        },
-        overwrite: false
-    })
-    Project.associate = models => {
-        Project.hasMany(models.ProjectComment, {
-            foreignKey: {
-                name: 'project_id',
-                allowNull: false
-            },
-            as: 'comments'
-        })
-        Project.belongsToMany(models.User, {
-            through: models.ProjectCreator,
-            foreignKey: {
-                name: 'project_id',
-                allowNull: false
-            },
-            as: 'creators'
-        })
-        Project.hasMany(models.ProjectImage, {
-            as: 'images'
-        })
-        Project.hasMany(models.ProjectLink, {
-            as: 'links'
-        })
-        Project.belongsTo(models.ProjectImage, {
-            as: 'main_image',
-            foreignKey: 'main_image_id'
-        })
-        Project.belongsToMany(models.Topic, {
-            through: models.ProjectTopic,
-            foreignKey: {
-                name: 'project_id',
-                allowNull: false,
-            },
-            as: 'topics'
-        })
-        Project.hasMany(models.ProjectUpvote, {
-            foreignKey: {
-                name: 'project_id',
-                allowNull: false
-            },
-            as: 'upvotes'
-        })
+class Project extends timestamps(Model) {
+    static get tableName() {
+        return 'projects'
     }
 
-    return Project
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { ProjectComment, ProjectCreator, ProjectImage, ProjectLink, ProjectTopic, ProjectUpvote, Topic, User } = require('.')
+        return {
+            comments: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectComment,
+                join: {
+                    from: 'projects.id',
+                    to: 'project_comments.project_id'
+                }
+            },
+            creators: {
+                relation: Model.ManyToManyRelation,
+                modelClass: User,
+                join: {
+                    from: 'projects.id',
+                    through: {
+                        model: ProjectCreator,
+                        from: 'project_creators.project_id',
+                        to: 'project_creators.user_id'
+                    },
+                    to: 'users.id'
+                }
+            },
+            images: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectImage,
+                join: {
+                    from: 'projects.id',
+                    to: 'project_images.project_id'
+                }
+            },
+            links: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectLink,
+                join: {
+                    from: 'projects.id',
+                    to: 'project_links.project_id'
+                }
+            },
+            topics: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Topic,
+                join: {
+                    from: 'projects.id',
+                    through: {
+                        model: ProjectTopic,
+                        from: 'project_topics.project_id',
+                        to: 'project_topics.topic_id'
+                    },
+                    to: 'topics.id'
+                }
+            },
+            upvotes: {
+                relation: Model.HasManyRelation,
+                modelClass: ProjectUpvote,
+                join: {
+                    from: 'projects.id',
+                    to: 'project_upvotes.project_id'
+                }
+            },
+            main_image: {
+                relation: Model.HasOneRelation,
+                modelClass: ProjectImage,
+                join: {
+                    from: 'projects.main_image_id',
+                    to: 'project_images.id'
+                }
+            }
+        }
+    }
 }
+
+module.exports = Project

@@ -1,35 +1,20 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('project_comments', {
-            id: {
-                allowNull: false,
-                autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
-            },
-            project_id: {
-                type: Sequelize.INTEGER
-            },
-            user_id: {
-                type: Sequelize.INTEGER
-            },
-            parent_id: {
-                type: Sequelize.INTEGER
-            },
-            body: {
-                type: Sequelize.TEXT
-            },
-            created_at: {
-                allowNull: false,
-                type: Sequelize.DATE
-            },
-            updated_at: {
-                allowNull: false,
-                type: Sequelize.DATE
-            }
-        });
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('project_comments')
-    }
+exports.up = knex => {
+    return knex.schema.createTable('project_comments', table => {
+        table.increments('id').primary()
+        table.integer('project_id')
+            .unsigned()
+            .references('projects.id')
+        table.integer('user_id')
+            .unsigned()
+            .references('users.id')
+        table.integer('parent_id')
+            .unsigned()
+            .references('project_comments.id')
+        table.text('body')
+        table.timestamps(true, true)
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.dropTableIfExists('project_comments')
 }

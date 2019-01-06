@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "description": "Hack Club Ship’s backend system.",
     "scripts": {
-        "dev": "npx sequelize db:migrate && nodemon -r dotenv/config app.js",
-        "start": "npx sequelize db:migrate && node app.js"
+        "dev": "nodemon -r dotenv/config app.js",
+        "start": "node app.js"
     },
     "repository": "https://github.com/hackclub/ship",
     "author": "Victor Truong <me@ifvictr.com>",
@@ -18,15 +18,15 @@
         "express": "^4.16.3",
         "helmet": "^3.13.0",
         "is-hex-color": "^0.0.1",
+        "knex": "^0.16.3",
         "lodash": "^4.17.10",
+        "objection": "^1.4.0",
+        "objection-timestamps": "^3.0.2",
         "passport": "^0.4.0",
         "passport-github2": "^0.1.11",
         "passport-http-bearer": "^1.0.1",
         "passport-slack": "^0.0.7",
         "pg": "^7.4.3",
-        "pg-hstore": "^2.3.2",
-        "sequelize": "^4.38.0",
-        "sequelize-slugify": "^0.6.1",
         "string-to-color": "^2.0.0"
     },
     "devDependencies": {

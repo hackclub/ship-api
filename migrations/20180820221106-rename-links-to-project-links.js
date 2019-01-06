@@ -1,8 +1,7 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.renameTable('links', 'project_links')
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.renameTable('project_links', 'links')
-    }
+exports.up = knex => {
+    return knex.schema.renameTable('links', 'project_links')
+}
+
+exports.down = knex => {
+    return knex.schema.renameTable('project_links', 'links')
 }

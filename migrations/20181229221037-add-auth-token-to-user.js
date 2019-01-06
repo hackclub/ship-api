@@ -1,33 +1,13 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
-            return Promise.all([
-                queryInterface.addColumn(
-                    'users',
-                    'auth_token',
-                    {
-                        type: Sequelize.STRING
-                    },
-                    { transaction: t }
-                ),
-                queryInterface.addColumn(
-                    'users',
-                    'auth_token_created_at',
-                    {
-                        type: Sequelize.DATE,
-                    },
-                    { transaction: t }
-                )
-            ])
-        })
-    },
+exports.up = knex => {
+    return knex.schema.table('users', table => {
+        table.string('auth_token')
+        table.timestamp('auth_token_created_at').defaultTo(knex.fn.now())
+    })
+}
 
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
-            return Promise.all([
-                queryInterface.removeColumn('users', 'auth_token', { transaction: t }),
-                queryInterface.removeColumn('users', 'auth_token_created_at', { transaction: t })
-            ])
-        })
-    }
+exports.down = knex => {
+    return knex.schema.table('users', table => {
+        table.dropColumn('auth_token')
+        table.dropColumn('auth_token_created_at')
+    })
 }

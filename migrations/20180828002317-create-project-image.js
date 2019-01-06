@@ -1,29 +1,14 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('project_images', {
-            id: {
-                allowNull: false,
-                autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
-            },
-            project_id: {
-                type: Sequelize.INTEGER
-            },
-            url: {
-                type: Sequelize.STRING
-            },
-            created_at: {
-                allowNull: false,
-                type: Sequelize.DATE
-            },
-            updated_at: {
-                allowNull: false,
-                type: Sequelize.DATE
-            }
-        })
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('project_images')
-    }
+exports.up = knex => {
+    return knex.schema.createTable('project_images', table => {
+        table.increments('id').primary()
+        table.integer('project_id')
+            .unsigned()
+            .references('projects.id')
+        table.string('url')
+        table.timestamps(true, true)
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.dropTableIfExists('project_images')
 }

@@ -1,8 +1,11 @@
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.changeColumn('projects', 'description', Sequelize.TEXT)
-    },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.changeColumn('projects', 'description', Sequelize.STRING)
-    }
+exports.up = knex => {
+    return knex.schema.table('projects', table => {
+        table.text('description').alter()
+    })
+}
+
+exports.down = knex => {
+    return knex.schema.table('projects', table => {
+        table.string('description').alter()
+    })
 }

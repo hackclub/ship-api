@@ -1,22 +1,23 @@
 const express = require('express')
 const passport = require('passport')
 const { topicIndex } = require('../../helpers/search')
-const { ProjectImage, ProjectLink, Topic, User } = require('../../models')
+const { Topic } = require('../../models')
 
 const router = express.Router()
 
 router.route('/')
     .get((req, res) => {
-        Topic.findAll().then(topics => res.json(topics))
+        Topic.query().then(topics => res.json(topics))
     })
     .post(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Topic.create(req.body)
-                .then(data => {
-                    const obj = { ...data.dataValues, objectID: data.id }
+            Topic.query()
+                .insert(req.body)
+                .then(topic => {
+                    const obj = { ...topic.dataValues, objectID: topic.id }
                     topicIndex.addObject(obj)
-                    res.status(201).json({ message: 'topic created', data })
+                    res.status(201).json({ message: 'topic created', data: topic })
                 })
                 .catch(e => {
                     res.status(422).json({ message: e.errors[0].message })
@@ -26,84 +27,73 @@ router.route('/')
 
 router.route('/slug/:slug')
     .get((req, res) => {
-        Topic.findOne({ where: { slug: req.params.slug } }).then(topic => {
-            if (topic) {
+        Topic.query()
+            .findOne('slug', req.params.slug)
+            .then(topic => {
+                if (!topic) {
+                    res.status(404).json({ message: 'topic not found' })
+                    return
+                }
                 res.json(topic)
-            }
-            else {
-                res.status(404).json({ message: 'topic not found' })
-            }
-        })
+            })
     })
 
 router.route('/:id')
     .get((req, res) => {
-        Topic.findById(req.params.id).then(topic => {
-            if (topic) {
+        Topic.query()
+            .findById(req.params.id)
+            .then(topic => {
+                if (!topic) {
+                    res.status(404).json({ message: 'topic not found' })
+                    return
+                }
                 res.json(topic)
-            }
-            else {
-                res.status(404).json({ message: 'topic not found' })
-            }
-        })
+            })
     })
     .patch(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Topic.update(req.body, { where: { id: req.params.id } }).then(() => {
-                const obj = { ...req.body, objectID: req.params.id }
-                topicIndex.partialUpdateObject(obj)
-                res.status(202).json({ message: 'topic updated' })
-            })
+            Topic.query()
+                .patchAndFetchById(req.params.id, req.body)
+                .then(topic => {
+                    if (!topic) {
+                        res.status(404).json({ message: 'topic not found' })
+                        return
+                    }
+                    const obj = { ...topic, objectID: req.params.id }
+                    topicIndex.partialUpdateObject(obj)
+                    res.status(202).json({ message: 'topic updated' })
+                })
         }
     )
     .delete(
         passport.authenticate('bearer', { session: false }),
         (req, res) => {
-            Topic.destroy({ where: { id: req.params.id } }).then(() => {
-                topicIndex.deleteObject(req.params.id)
-                res.status(202).json({ message: 'topic deleted' })
-            })
+            Topic.query()
+                .deleteById(req.params.id)
+                .then(deletedCount => {
+                    if (!deletedCount) {
+                        res.status(404).json({ message: 'topic not found' })
+                        return
+                    }
+                    topicIndex.deleteObject(req.params.id)
+                    res.status(202).json({ message: 'topic deleted' })
+                })
         }
     )
 
 router.route('/:id/projects')
     .get((req, res) => {
-        Topic.findById(req.params.id)
+        Topic.query()
+            .findById(req.params.id)
             .then(topic => {
-                if (topic) {
-                    topic.getProjects({
-                        include: [
-                            {
-                                model: User,
-                                as: 'creators',
-                                through: { attributes: [] }
-                            },
-                            {
-                                model: ProjectImage,
-                                as: 'images'
-                            },
-                            {
-                                model: ProjectLink,
-                                as: 'links'
-                            },
-                            {
-                                model: Topic,
-                                as: 'topics',
-                                through: { attributes: [] }
-                            },
-                            {
-                                model: ProjectImage,
-                                as: 'main_image'
-                            }
-                        ],
-                        joinTableAttributes: []
-                    })
-                        .then(projects => res.json(projects))
-                }
-                else {
+                if (!topic) {
                     res.status(404).json({ message: 'topic not found' })
+                    return
                 }
+                topic.$relatedQuery('projects')
+                    .eager('[creators, images, links, topics, main_image]')
+                    .then(projects => res.json(projects))
             })
     })
 

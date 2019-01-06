@@ -1,23 +1,28 @@
-module.exports = (sequelize, DataTypes) => {
-    const ProjectImage = sequelize.define(
-        'ProjectImage',
-        {
-            project_id: DataTypes.INTEGER,
-            url: DataTypes.STRING
-        },
-        {
-            tableName: 'project_images',
-            underscored: true,
-            defaultScope: {
-                attributes: {
-                    exclude: ['created_at', 'updated_at', 'project_id']
+const { Model } = require('objection')
+const timestamps = require('objection-timestamps').timestampPlugin()
+
+class ProjectImage extends timestamps(Model) {
+    static get tableName() {
+        return 'project_images'
+    }
+
+    static get timestamp() {
+        return true
+    }
+
+    static get relationMappings() {
+        const { Project } = require('.')
+        return {
+            project: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Project,
+                join: {
+                    from: 'project_images.project_id',
+                    to: 'projects.id'
                 }
             }
         }
-    )
-    ProjectImage.associate = models => {
-        ProjectImage.belongsTo(models.Project)
     }
-
-    return ProjectImage
 }
+
+module.exports = ProjectImage
