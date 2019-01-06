@@ -1,49 +1,45 @@
-const { Model } = require('objection')
-const timestamps = require('objection-timestamps').timestampPlugin()
+import { Model } from 'objection'
+import { timestampPlugin } from 'objection-timestamps'
+import { Project, ProjectComment, ProjectCreator, ProjectUpvote } from '.'
+
+const timestamps = timestampPlugin()
 
 class User extends timestamps(Model) {
-    static get tableName() {
-        return 'users'
-    }
+    static tableName = 'users'
 
-    static get timestamp() {
-        return true
-    }
+    static timestamp = true
 
-    static get relationMappings() {
-        const { Project, ProjectComment, ProjectCreator, ProjectUpvote } = require('.')
-        return {
-            comments: {
-                relation: Model.HasManyRelation,
-                modelClass: ProjectComment,
-                join: {
-                    from: 'users.id',
-                    to: 'project_comments.user_id'
-                }
-            },
-            projects: {
-                relation: Model.ManyToManyRelation,
-                modelClass: Project,
-                join: {
-                    from: 'users.id',
-                    through: {
-                        modelClass: ProjectCreator,
-                        from: 'project_creators.user_id',
-                        to: 'project_creators.project_id'
-                    },
-                    to: 'projects.id'
-                }
-            },
-            upvotes: {
-                relation: Model.HasManyRelation,
-                modelClass: ProjectUpvote,
-                join: {
-                    from: 'users.id',
-                    to: 'project_upvotes.user_id'
-                }
+    static relationMappings = () => ({
+        comments: {
+            relation: Model.HasManyRelation,
+            modelClass: ProjectComment,
+            join: {
+                from: 'users.id',
+                to: 'project_comments.user_id'
+            }
+        },
+        projects: {
+            relation: Model.ManyToManyRelation,
+            modelClass: Project,
+            join: {
+                from: 'users.id',
+                through: {
+                    modelClass: ProjectCreator,
+                    from: 'project_creators.user_id',
+                    to: 'project_creators.project_id'
+                },
+                to: 'projects.id'
+            }
+        },
+        upvotes: {
+            relation: Model.HasManyRelation,
+            modelClass: ProjectUpvote,
+            join: {
+                from: 'users.id',
+                to: 'project_upvotes.user_id'
             }
         }
-    }
+    })
 }
 
-module.exports = User
+export default User

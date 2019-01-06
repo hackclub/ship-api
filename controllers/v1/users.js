@@ -1,7 +1,7 @@
-const crypto = require('crypto')
-const express = require('express')
-const passport = require('passport')
-const { User } = require('../../models')
+import crypto from 'crypto'
+import express from 'express'
+import passport from 'passport'
+import { User } from '../../models'
 
 const router = express.Router()
 
@@ -112,4 +112,4 @@ router.route('/:id/upvotes')
             })
     })
 
-module.exports = router
+export default router

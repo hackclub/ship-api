@@ -1,7 +1,7 @@
-const express = require('express')
-const passport = require('passport')
-const { projectIndex } = require('../../helpers/search')
-const { Project, ProjectComment, ProjectUpvote } = require('../../models')
+import express from 'express'
+import passport from 'passport'
+import { projectIndex } from '../../helpers/search'
+import { Project, ProjectComment, ProjectUpvote } from '../../models'
 
 const router = express.Router()
 
@@ -150,4 +150,4 @@ router.route('/:id/upvotes')
         }
     )
 
-module.exports = router
+export default router

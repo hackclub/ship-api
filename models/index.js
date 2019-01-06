@@ -1,9 +1,9 @@
-exports.Project = require('./Project')
-exports.ProjectComment = require('./ProjectComment')
-exports.ProjectCreator = require('./ProjectCreator')
-exports.ProjectImage = require('./ProjectImage')
-exports.ProjectLink = require('./ProjectLink')
-exports.ProjectTopic = require('./ProjectTopic')
-exports.ProjectUpvote = require('./ProjectUpvote')
-exports.Topic = require('./Topic')
-exports.User = require('./User')
+export { default as Project } from './Project'
+export { default as ProjectComment } from './ProjectComment'
+export { default as ProjectCreator } from './ProjectCreator'
+export { default as ProjectImage } from './ProjectImage'
+export { default as ProjectLink } from './ProjectLink'
+export { default as ProjectTopic } from './ProjectTopic'
+export { default as ProjectUpvote } from './ProjectUpvote'
+export { default as Topic } from './Topic'
+export { default as User } from './User'

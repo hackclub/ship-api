@@ -1,36 +1,32 @@
-const { Model } = require('objection')
-const timestamps = require('objection-timestamps').timestampPlugin()
+import { Model } from 'objection'
+import { timestampPlugin } from 'objection-timestamps'
+import { Project, User } from '.'
+
+const timestamps = timestampPlugin()
 
 class ProjectCreator extends timestamps(Model) {
-    static get tableName() {
-        return 'project_creators'
-    }
+    static tableName = 'project_creators'
 
-    static get timestamp() {
-        return true
-    }
+    static timestamp = true
 
-    static get relationMappings() {
-        const { Project, User } = require('.')
-        return {
-            project: {
-                relation: Model.BelongsToOneRelation,
-                modelClass: Project,
-                join: {
-                    from: 'project_creators.project_id',
-                    to: 'projects.id'
-                }
-            },
-            user: {
-                relation: Model.BelongsToOneRelation,
-                modelClass: User,
-                join: {
-                    from: 'project_creators.user_id',
-                    to: 'users.id'
-                }
+    static relationMappings = () => ({
+        project: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Project,
+            join: {
+                from: 'project_creators.project_id',
+                to: 'projects.id'
+            }
+        },
+        user: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: User,
+            join: {
+                from: 'project_creators.user_id',
+                to: 'users.id'
             }
         }
-    }
+    })
 }
 
-module.exports = ProjectCreator
+export default ProjectCreator
