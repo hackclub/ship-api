@@ -76,8 +76,8 @@ passport.use(new GitHubStrategy(
             return
         }
         User.query()
-            .where('email', githubEmail) // User is already in database, but hasn't linked GitHub
-            .orWhere('github_id', profile.id) // User has linked GitHub already
+            .where('email', githubEmail)
+            .orWhere('github_id', profile.id)
             .first()
             .then(user => {
                 if (!user) {
@@ -90,6 +90,15 @@ passport.use(new GitHubStrategy(
                         })
                         .then(newUser => {
                             done(null, newUser)
+                        })
+                    return
+                }
+                // User hasn't linked GitHub yet
+                if (!user.github_id) {
+                    User.query()
+                        .patchAndFetchById(user.id, { github_id: profile.id })
+                        .then(updatedUser => {
+                            done(null, updatedUser)
                         })
                     return
                 }
@@ -106,8 +115,8 @@ passport.use(new SlackStrategy(
     },
     (accessToken, refreshToken, profile, done) => {
         User.query()
-            .where('email', profile.user.email) // User is already in database, but hasn't linked Slack
-            .orWhere('slack_id', profile.user.id) // User has linked Slack already
+            .where('email', profile.user.email)
+            .orWhere('slack_id', profile.user.id)
             .first()
             .then(user => {
                 if (!user) {
@@ -120,6 +129,15 @@ passport.use(new SlackStrategy(
                         })
                         .then(newUser => {
                             done(null, newUser)
+                        })
+                    return
+                }
+                // User hasn't linked Slack yet
+                if (!user.slack_id) {
+                    User.query()
+                        .patchAndFetchById(user.id, { slack_id: profile.user.id })
+                        .then(updatedUser => {
+                            done(null, updatedUser)
                         })
                     return
                 }
