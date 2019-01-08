@@ -22,6 +22,7 @@
         "is-hex-color": "^0.0.1",
         "knex": "^0.16.3",
         "lodash": "^4.17.10",
+        "morgan": "^1.9.1",
         "objection": "^1.4.0",
         "objection-timestamps": "^3.0.2",
         "passport": "^0.4.0",
@@ -29,7 +30,8 @@
         "passport-http-bearer": "^1.0.1",
         "passport-slack": "^0.0.7",
         "pg": "^7.4.3",
-        "string-to-color": "^2.0.0"
+        "string-to-color": "^2.0.0",
+        "winston": "^3.1.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.2.3",

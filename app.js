@@ -4,17 +4,38 @@ import express from 'express'
 import helmet from 'helmet'
 import Knex from 'knex'
 import { kebabCase } from 'lodash'
+import morgan from 'morgan'
 import { Model } from 'objection'
 import passport from 'passport'
 import { Strategy as GitHubStrategy } from 'passport-github2'
 import { Strategy as BearerStrategy } from 'passport-http-bearer'
 import { Strategy as SlackStrategy } from 'passport-slack'
+import winston from 'winston'
 import { User } from './models'
 import knexConfig from './knexfile'
 
 const env = process.env.NODE_ENV || 'development'
 const knex = Knex(knexConfig[env])
 Model.knex(knex)
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console({
+            level: 'debug',
+            handleExceptions: true,
+            json: false,
+            colorize: true,
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple()
+            ),
+            timestamp: true
+        })
+    ],
+    exitOnError: false
+})
+logger.stream.write = message => {
+    logger.info(message)
+}
 const app = express()
 
 passport.serializeUser((user, done) => {
@@ -84,7 +105,6 @@ passport.use(new SlackStrategy(
         scope: ['identity.basic']
     },
     (accessToken, refreshToken, profile, done) => {
-        console.log(profile)
         User.query()
             .where('email', profile.user.email) // User is already in database, but hasn't linked Slack
             .orWhere('slack_id', profile.user.id) // User has linked Slack already
@@ -108,6 +128,7 @@ passport.use(new SlackStrategy(
     }
 ))
 
+app.use(morgan('combined', { stream: logger.stream }))
 app.use(cors({
     origin: [
         'https://ship.hackclub.com',
@@ -138,8 +159,9 @@ const port = process.env.PORT || 3000
 // Ensure database connection
 knex.raw('SELECT 1')
     .then(() => {
+        logger.info('Connected to database')
         app.listen(port, () => {
-            console.log(`Listening on port ${port}`)
+            logger.info(`Listening on port ${port}`)
         })
     })
-    .catch(console.error)
+    .catch(logger.error)
