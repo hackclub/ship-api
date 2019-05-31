@@ -161,16 +161,16 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // Routes
-import CommentsController from './controllers/v1/comments'
-import ProjectsController from './controllers/v1/projects'
-import TopicsController from './controllers/v1/topics'
-import UpvotesController from './controllers/v1/upvotes'
-import UsersController from './controllers/v1/users'
-app.use('/v1/comments', CommentsController)
-app.use('/v1/projects', ProjectsController)
-app.use('/v1/topics', TopicsController)
-app.use('/v1/upvotes', UpvotesController)
-app.use('/v1/users', UsersController)
+// import CommentsController from './controllers/v1/comments'
+// import ProjectsController from './controllers/v1/projects'
+// import TopicsController from './controllers/v1/topics'
+// import UpvotesController from './controllers/v1/upvotes'
+// import UsersController from './controllers/v1/users'
+// app.use('/v1/comments', CommentsController)
+// app.use('/v1/projects', ProjectsController)
+// app.use('/v1/topics', TopicsController)
+// app.use('/v1/upvotes', UpvotesController)
+// app.use('/v1/users', UsersController)
 
 const port = process.env.PORT || 3000
 
